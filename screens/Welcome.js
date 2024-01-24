@@ -1,8 +1,7 @@
 import React from 'react';
-import { View, Image, Text, TouchableOpacity } from 'react-native';
+import { View, Image, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from '@react-navigation/native';
-import COLORS from '../assets/constants/colors';
 
 const Welcome = () => {
 
@@ -14,31 +13,18 @@ const Welcome = () => {
 
   return (
     <LinearGradient
-        style={{
-            flex: 1,
-        }}
-        colors={[COLORS.secondary, COLORS.primary]}
+        className="flex-1"
+        colors={['#007260', '#39B68D']}
     >
-        <View style={{flex: 1}}>
+        <View style={styles.imageContainer}>
             <View className="flex items-center justify-center">
                 <Image
                     source={require("../assets/images/old_male.png")}
-                    style={{
-                        borderRadius: 20,
-                        position: "absolute",
-                        top: 120,
-                        width: 340,
-                        height: 400
-                    }}
+                    style={styles.mainImage}
                 />
             </View>
 
-            <View style={{
-                paddingHorizontal: 22,
-                position: "absolute",
-                top: 580,
-                width: "100%"
-            }}>
+            <View style={styles.contextContainer}>
                 <Text className="text-5xl font-extrabold text-white">
                     EverGuardian
                 </Text>
@@ -50,16 +36,10 @@ const Welcome = () => {
 
                 <View className="flex items-center justify-center">
                     <TouchableOpacity
-                        style={{
-                            backgroundColor: 'black',
-                            padding: 15,
-                            paddingLeft: 80,
-                            paddingRight: 80,
-                            borderRadius: 15,
-                        }}
+                        className="bg-black p-4 pl-20 pr-20 rounded-lg"
                         onPress={handleGetStarted}
                     >
-                        <Text style={{ color: COLORS.white, fontSize: 18 }}>
+                        <Text className="text-white text-lg">
                             Get Started
                         </Text>
                     </TouchableOpacity>
@@ -71,3 +51,22 @@ const Welcome = () => {
 }
 
 export default Welcome
+
+const styles = StyleSheet.create({
+    imageContainer: {
+        flex: 1
+    },
+    mainImage: {
+        borderRadius: 20,
+        position: "absolute",
+        top: 120,
+        width: 340,
+        height: 400
+    },
+    contextContainer: {
+        paddingHorizontal: 22,
+        position: "absolute",
+        top: 580,
+        width: "100%"
+    }
+})
