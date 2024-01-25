@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     contextContainer: {
         paddingHorizontal: 22,
         position: "absolute",
-        top: 580,
+        top: 530,
         width: "100%"
     }
 })
