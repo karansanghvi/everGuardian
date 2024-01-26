@@ -39,7 +39,7 @@ const Welcome = () => {
                         className="bg-black p-4 pl-20 pr-20 rounded-lg"
                         onPress={handleGetStarted}
                     >
-                        <Text className="text-white text-lg">
+                        <Text className="text-white text-lg font-extrabold">
                             Get Started
                         </Text>
                     </TouchableOpacity>

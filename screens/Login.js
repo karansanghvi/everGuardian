@@ -1,11 +1,79 @@
-import { View, Text } from 'react-native'
-import React from 'react'
+import { View, Text, TouchableOpacity, TextInput, Image } from 'react-native'
+import React, { useState } from 'react'
+import { LinearGradient } from 'expo-linear-gradient'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { useNavigation } from '@react-navigation/native'
+import {ArrowLeftIcon} from 'react-native-heroicons/solid'
 
 const Login = () => {
+
+  const navigation = useNavigation();
+  const [isSelected, setSelection] = useState(false);
+  const handleSignUp = () => {
+    navigation.navigate('Signup');
+  }
+
   return (
-    <View className="flex items-center justify-center">
-      <Text className="mt-60 text-black font-bold text-4xl">Login Page</Text>
-    </View>
+    <LinearGradient
+      className="flex-1 bg-white"
+      colors={['#007260', '#39B68D']} 
+    >
+      <SafeAreaView className="flex">
+        <View className="flex-row justify-start">
+          <TouchableOpacity 
+            onPress={() => navigation.goBack()}
+            className="bg-black p-2 rounded-tr-2xl rounded-bl-2xl ml-4 mt-4"
+          >
+            <ArrowLeftIcon size="20" color="white" />
+          </TouchableOpacity>
+        </View>
+        <View className="flex-row justify-center mt-2">
+          <Text className="text-4xl text-white font-extrabold mt-4">Welcome Back</Text>
+        </View>
+      </SafeAreaView>
+      <View className="rounded-tl-2xl rounded-tr-2xl flex-1 bg-white px-8 pt-8 mt-20">
+        <View className="form space-y-2">
+          <Text className="text-black ml-1 text-lg">Enter Your Username:</Text>
+            <TextInput
+              className="p-4 bg-gray-100 text-black rounded-2xl mb-3"
+              placeholder='Username'
+            />
+          <Text className="text-black ml-1 text-lg">Enter Your Password:</Text>
+            <TextInput
+              className="p-4 bg-gray-100 text-black rounded-2xl mb-3"
+              secureTextEntry
+              placeholder='Password'
+            />
+            <TouchableOpacity className="flex items-end">
+              <Text className="text-black mb-5">
+                Forgot Password?
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity className="py-3 bg-black rounded-lg">
+              <Text className="text-lg text-white text-center font-extrabold">
+                Login
+              </Text>
+            </TouchableOpacity>
+            <Text className="text-black text-lg text-center">
+              Or
+            </Text>
+            <TouchableOpacity className="p-2 bg-gray-100 rounded-2xl flex items-center">
+              <View className="flex-row justify-center items-center space-x-3">
+                <Image source={require('../assets/images/google.png')} className="w-10 h-10" />
+                <Text className="text-black text-lg ml-2">Sign In With Google</Text>
+              </View>
+            </TouchableOpacity>
+            <View className="flex-row justify-center mt-7">
+              <Text className="text-gray-500 font-semibold">
+                  Don't have an account?
+              </Text>
+              <TouchableOpacity onPress={handleSignUp}>
+                  <Text className="font-semibold text-green"> Sign Up</Text>
+              </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </LinearGradient>
   )
 }
 

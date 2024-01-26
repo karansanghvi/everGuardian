@@ -1,12 +1,12 @@
-import { View, Text } from 'react-native'
-import React from 'react'
+import { View, Text } from 'react-native';
+import React from 'react';
 
 const Signup = () => {
   return (
-    <View>
-      <Text>Signup</Text>
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text className="font-bold text-2xl">Signup Page</Text>
     </View>
-  )
-}
+  );
+};
 
-export default Signup
+export default Signup;
