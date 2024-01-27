@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, TextInput, Image, ScrollView } from 'react-native'
+import { View, Text, TouchableOpacity, TextInput, Image, ScrollView, StyleSheet } from 'react-native'
 import React from 'react'
 import { LinearGradient } from 'expo-linear-gradient'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -81,9 +81,11 @@ const Signup = () => {
                   Signup
                 </Text>
               </TouchableOpacity>
-              <Text className="text-black text-lg text-center">
-                Or
-              </Text>
+              <View style={styles.separator}>
+                <View style={styles.line}></View>
+                <Text style={styles.orText}>Or</Text>
+                <View style={styles.line}></View>
+              </View>
               <TouchableOpacity className="p-2 bg-gray-100 rounded-2xl flex items-center">
                 <View className="flex-row justify-center items-center space-x-3">
                   <Image source={require('../assets/images/google.png')} className="w-10 h-10" />
@@ -95,7 +97,7 @@ const Signup = () => {
                     Already have an account?
                 </Text>
                 <TouchableOpacity onPress={handleLogin}>
-                    <Text className="font-semibold text-green mb-8">Login</Text>
+                    <Text className="font-semibold text-green mb-8"> Login</Text>
                 </TouchableOpacity>
             </View>
           </View>
@@ -106,3 +108,21 @@ const Signup = () => {
 }
 
 export default Signup
+
+const styles = StyleSheet.create({
+  separator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+  line: {
+    flex: 1,
+    height: 1,
+    backgroundColor: 'lightgray',
+    marginHorizontal: 4,
+  },
+  orText: {
+    color: 'black',
+    fontSize: 16,
+  },
+});
