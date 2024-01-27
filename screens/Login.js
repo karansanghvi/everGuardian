@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, TextInput, Image } from 'react-native'
-import React, { useState } from 'react'
+import React from 'react'
 import { LinearGradient } from 'expo-linear-gradient'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
@@ -8,9 +8,11 @@ import {ArrowLeftIcon} from 'react-native-heroicons/solid'
 const Login = () => {
 
   const navigation = useNavigation();
-  const [isSelected, setSelection] = useState(false);
   const handleSignUp = () => {
     navigation.navigate('Signup');
+  }
+  const handleLoginButton = () => {
+    navigation.navigate('Home');
   }
 
   return (
@@ -49,7 +51,10 @@ const Login = () => {
                 Forgot Password?
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity className="py-3 bg-black rounded-lg">
+            <TouchableOpacity 
+              className="py-3 bg-black rounded-lg"
+              onPress={handleLoginButton}
+            >
               <Text className="text-lg text-white text-center font-extrabold">
                 Login
               </Text>
@@ -60,7 +65,7 @@ const Login = () => {
             <TouchableOpacity className="p-2 bg-gray-100 rounded-2xl flex items-center">
               <View className="flex-row justify-center items-center space-x-3">
                 <Image source={require('../assets/images/google.png')} className="w-10 h-10" />
-                <Text className="text-black text-lg ml-2">Sign In With Google</Text>
+                <Text className="text-black text-lg ml-2">Login In With Google</Text>
               </View>
             </TouchableOpacity>
             <View className="flex-row justify-center mt-7">
