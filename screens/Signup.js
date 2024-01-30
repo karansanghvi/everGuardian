@@ -38,12 +38,12 @@ const Signup = () => {
           <View className="form space-y-2">
             <Text className="text-black ml-1 text-lg">Enter First Name:</Text>
               <TextInput
-                className="p-4 bg-gray-100 text-black rounded-2xl mb-3"
+                className="p-4 bg-gray-100 text-black rounded-xl mb-3"
                 placeholder='First Name'
               />
             <Text className="text-black ml-1 text-lg">Enter Last Name:</Text>
               <TextInput
-                className="p-4 bg-gray-100 text-black rounded-2xl mb-3"
+                className="p-4 bg-gray-100 text-black rounded-xl mb-3"
                 placeholder='First Name'
               />           
             <Text className="text-black ml-1 text-lg">Enter Username:</Text>
@@ -53,18 +53,18 @@ const Signup = () => {
               />
             <Text className="text-black ml-1 text-lg">Enter Phone Number:</Text>
               <TextInput
-                className="p-4 bg-gray-100 text-black rounded-2xl mb-3"
+                className="p-4 bg-gray-100 text-black rounded-xl mb-3"
                 placeholder='Phone Number'
                 keyboardType='numeric'
               />
             <Text className="text-black ml-1 text-lg">Enter Email Address:</Text>
               <TextInput
-                className="p-4 bg-gray-100 text-black rounded-2xl mb-3"
+                className="p-4 bg-gray-100 text-black rounded-xl mb-3"
                 placeholder='Email Address'
               />
             <Text className="text-black ml-1 text-lg">Enter Password:</Text>
               <TextInput
-                className="p-4 bg-gray-100 text-black rounded-2xl mb-3"
+                className="p-4 bg-gray-100 text-black rounded-xl mb-3"
                 secureTextEntry
                 placeholder='Password'
               />

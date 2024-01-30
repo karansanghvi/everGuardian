@@ -37,12 +37,12 @@ const Login = () => {
         <View className="form space-y-2">
           <Text className="text-black ml-1 text-lg">Enter Your Username:</Text>
             <TextInput
-              className="p-4 bg-gray-100 text-black rounded-2xl mb-3"
+              className="p-4 bg-gray-100 text-black rounded-xl mb-3"
               placeholder='Username'
             />
           <Text className="text-black ml-1 text-lg">Enter Your Password:</Text>
             <TextInput
-              className="p-4 bg-gray-100 text-black rounded-2xl mb-3"
+              className="p-4 bg-gray-100 text-black rounded-xl mb-3"
               secureTextEntry
               placeholder='Password'
             />
