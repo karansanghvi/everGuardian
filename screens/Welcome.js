@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Image, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from '@react-navigation/native';
+import { Platform } from 'react-native';
 
 const Welcome = () => {
 
@@ -59,14 +60,14 @@ const styles = StyleSheet.create({
     mainImage: {
         borderRadius: 20,
         position: "absolute",
-        top: 120,
+        top: Platform.OS === 'ios' ? 120 : 100, // Adjust top position based on the platform
         width: 340,
         height: 400
     },
     contextContainer: {
         paddingHorizontal: 22,
         position: "absolute",
-        top: 530,
+        top: Platform.OS === 'ios' ? 530 : 500, // Adjust top position based on the platform
         width: "100%"
     }
-})
+});
