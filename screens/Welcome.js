@@ -60,14 +60,14 @@ const styles = StyleSheet.create({
     mainImage: {
         borderRadius: 20,
         position: "absolute",
-        top: Platform.OS === 'ios' ? 120 : 100, // Adjust top position based on the platform
+        top: Platform.OS === 'ios' ? 120 : 100, 
         width: 340,
         height: 400
     },
     contextContainer: {
         paddingHorizontal: 22,
         position: "absolute",
-        top: Platform.OS === 'ios' ? 530 : 500, // Adjust top position based on the platform
+        top: Platform.OS === 'ios' ? 530 : 500, 
         width: "100%"
     }
 });
