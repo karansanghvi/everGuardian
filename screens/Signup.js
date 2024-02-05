@@ -1,19 +1,55 @@
-import { View, Text, TouchableOpacity, TextInput, Image, ScrollView, StyleSheet } from 'react-native'
-import React from 'react'
-import { LinearGradient } from 'expo-linear-gradient'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { useNavigation } from '@react-navigation/native'
-import {ArrowLeftIcon} from 'react-native-heroicons/solid'
+import { View, Text, TouchableOpacity, TextInput, Image, ScrollView, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { LinearGradient } from 'expo-linear-gradient';
+import { SafeAreaView } from 'react-native-safe-area-context';
+// import { useNavigation } from '@react-navigation/native';
+import {ArrowLeftIcon} from 'react-native-heroicons/solid';
+import { firebase } from '../config';
 
-const Signup = () => {
+const Signup = ({ navigation }) => {
 
-  const navigation = useNavigation();
-  const handleLogin = () => {
-    navigation.navigate('Login');
+  // const navigation = useNavigation();
+  // const handleLogin = () => {
+  //   navigation.navigate('Login');
+  // }
+  // const handleSignupButton = () => {
+  //   navigation.navigate('Home');
+  // }
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState();
+
+  const registerUser = async () => {
+    try 
+    {
+      // create user in firebase
+      await firebase.auth().createUserWithEmailAndPassword(email, password);
+
+      // send email verification
+      await firebase.auth().currentUser.sendEmailVerification({
+        handleCodeInApp: true,
+        url: 'https://authenticationsystem-9e2c9.firebaseapp.com/',
+      });
+
+      // store user data in firestore
+      await firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).set({
+        firstName,
+        lastName,
+        phoneNumber,
+        email,
+      });
+
+      alert('Verification email sent. Please check your email and verify your account.');
+      navigation.navigate('Login');
+    }
+    catch (error) 
+    {
+      alert(error.message);
+    }
   }
-  const handleSignupButton = () => {
-    navigation.navigate('Home');
-  }
+  
 
   return (
     <LinearGradient
@@ -40,33 +76,42 @@ const Signup = () => {
               <TextInput
                 className="p-4 bg-gray-100 text-black rounded-xl mb-3"
                 placeholder='First Name'
+                onChangeText={(text) => setFirstName(text)}
+                autoCapitalize='none'
+                autoCorrect={false}
               />
             <Text className="text-black ml-1 text-lg">Enter Last Name:</Text>
               <TextInput
                 className="p-4 bg-gray-100 text-black rounded-xl mb-3"
-                placeholder='First Name'
+                placeholder='Last Name'
+                onChangeText={(text) => setLastName(text)}
+                autoCapitalize='none'
+                autoCorrect={false}
               />           
-            <Text className="text-black ml-1 text-lg">Enter Username:</Text>
-              <TextInput
-                className="p-4 bg-gray-100 text-black rounded-2xl mb-3"
-                placeholder='Username'
-              />
             <Text className="text-black ml-1 text-lg">Enter Phone Number:</Text>
               <TextInput
                 className="p-4 bg-gray-100 text-black rounded-xl mb-3"
                 placeholder='Phone Number'
                 keyboardType='numeric'
+                onChangeText={(number) => setPhoneNumber(number)}
               />
             <Text className="text-black ml-1 text-lg">Enter Email Address:</Text>
               <TextInput
                 className="p-4 bg-gray-100 text-black rounded-xl mb-3"
                 placeholder='Email Address'
+                onChangeText={(text) => setEmail(text)}
+                autoCapitalize='none'
+                autoCorrect={false}
+                keyboardType='email-address'
               />
             <Text className="text-black ml-1 text-lg">Enter Password:</Text>
               <TextInput
                 className="p-4 bg-gray-100 text-black rounded-xl mb-3"
                 secureTextEntry
                 placeholder='Password'
+                onChangeText={(text) => setPassword(text)}
+                autoCapitalize='none'
+                autoCorrect={false}
               />
               <TouchableOpacity className="flex items-end">
                 <Text className="text-black mb-2">
@@ -75,7 +120,7 @@ const Signup = () => {
               </TouchableOpacity>
               <TouchableOpacity 
                 className="py-3 bg-black rounded-lg"
-                onPress={handleSignupButton}
+                onPress={registerUser}
               >
                 <Text className="text-lg text-white text-center font-extrabold">
                   Signup

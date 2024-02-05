@@ -1,18 +1,33 @@
-import { View, Text, TouchableOpacity, TextInput, Image, StyleSheet } from 'react-native'
-import React from 'react'
-import { LinearGradient } from 'expo-linear-gradient'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { useNavigation } from '@react-navigation/native'
-import {ArrowLeftIcon} from 'react-native-heroicons/solid'
+import { View, Text, TouchableOpacity, TextInput, Image, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { LinearGradient } from 'expo-linear-gradient';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
+import {ArrowLeftIcon} from 'react-native-heroicons/solid';
+import { firebase } from '../config';
 
 const Login = () => {
 
   const navigation = useNavigation();
-  const handleSignUp = () => {
-    navigation.navigate('Signup');
-  }
-  const handleLoginButton = () => {
-    navigation.navigate('Home');
+  // const handleSignUp = () => {
+  //   navigation.navigate('Signup');
+  // }
+  // const handleLoginButton = () => {
+  //   navigation.navigate('Home');
+  // }
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  loginUser = async (email, password) => {
+    try 
+    {
+      await firebase.auth().signInWithEmailAndPassword(email, password)
+    } 
+    catch (error)
+    {
+      alert(error.message)
+    }
   }
 
   return (
@@ -35,16 +50,22 @@ const Login = () => {
       </SafeAreaView>
       <View className="rounded-tl-2xl rounded-tr-2xl flex-1 bg-white px-8 pt-8 mt-20">
         <View className="form space-y-2">
-          <Text className="text-black ml-1 text-lg">Enter Your Username:</Text>
+          <Text className="text-black ml-1 text-lg">Enter Your Email Address:</Text>
             <TextInput
               className="p-4 bg-gray-100 text-black rounded-xl mb-3"
-              placeholder='Username'
+              placeholder='Email Address'
+              autoCapitalize='none'
+              autoCorrect={false}
+              onChangeText={(email) => setEmail(email)}
             />
           <Text className="text-black ml-1 text-lg">Enter Your Password:</Text>
             <TextInput
               className="p-4 bg-gray-100 text-black rounded-xl mb-3"
               secureTextEntry
               placeholder='Password'
+              autoCapitalize='none'
+              autoCorrect={false}
+              onChangeText={(password) => setPassword(password)}
             />
             <TouchableOpacity className="flex items-end">
               <Text className="text-black mb-5">
@@ -53,7 +74,8 @@ const Login = () => {
             </TouchableOpacity>
             <TouchableOpacity 
               className="py-3 bg-black rounded-lg"
-              onPress={handleLoginButton}
+              // onPress={handleLoginButton}
+              onPress={() => loginUser(email, password)}
             >
               <Text className="text-lg text-white text-center font-extrabold">
                 Login
@@ -74,7 +96,10 @@ const Login = () => {
               <Text className="text-gray-500 font-semibold">
                   Don't have an account?
               </Text>
-              <TouchableOpacity onPress={handleSignUp}>
+              <TouchableOpacity 
+                // onPress={handleSignUp}
+                onPress={() => navigation.navigate('Signup')}
+              >
                   <Text className="font-semibold text-green"> Sign Up</Text>
               </TouchableOpacity>
           </View>
