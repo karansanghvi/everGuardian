@@ -9,9 +9,9 @@ import { firebase } from '../config';
 const Signup = ({ navigation }) => {
 
   // const navigation = useNavigation();
-  // const handleLogin = () => {
-  //   navigation.navigate('Login');
-  // }
+  const handleLogin = () => {
+    navigation.navigate('Login');
+  }
   // const handleSignupButton = () => {
   //   navigation.navigate('Home');
   // }
@@ -22,33 +22,37 @@ const Signup = ({ navigation }) => {
   const [phoneNumber, setPhoneNumber] = useState();
 
   const registerUser = async () => {
-    try 
-    {
-      // create user in firebase
+    try {
+      console.log('Attempting to create user...');
       await firebase.auth().createUserWithEmailAndPassword(email, password);
-
-      // send email verification
+  
+      console.log('Sending email verification...');
       await firebase.auth().currentUser.sendEmailVerification({
         handleCodeInApp: true,
-        url: 'https://authenticationsystem-9e2c9.firebaseapp.com/',
+        url: 'https://everguardian-55395.firebaseapp.com',
       });
-
-      // store user data in firestore
+  
+      console.log('Storing user data in Firestore...');
       await firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).set({
         firstName,
         lastName,
         phoneNumber,
         email,
       });
-
-      alert('Verification email sent. Please check your email and verify your account.');
-      navigation.navigate('Login');
-    }
-    catch (error) 
-    {
+  
+      console.log('Verification email sent. Please check your email and verify your account.');
+      navigation.navigate('Home', {
+        email,
+        firstName,
+        lastName,
+        phoneNumber,
+      });
+    } catch (error) {
+      console.error('Error during registration:', error);
       alert(error.message);
     }
-  }
+  };  
+  
   
 
   return (
@@ -120,7 +124,8 @@ const Signup = ({ navigation }) => {
               </TouchableOpacity>
               <TouchableOpacity 
                 className="py-3 bg-black rounded-lg"
-                onPress={registerUser}
+                // onPress={registerUser}
+                onPress={() => registerUser(email, firstName, lastName, phoneNumber)}
               >
                 <Text className="text-lg text-white text-center font-extrabold">
                   Signup

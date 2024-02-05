@@ -9,9 +9,9 @@ import { firebase } from '../config';
 const Login = () => {
 
   const navigation = useNavigation();
-  // const handleSignUp = () => {
-  //   navigation.navigate('Signup');
-  // }
+  const handleSignUp = () => {
+    navigation.navigate('Signup');
+  }
   // const handleLoginButton = () => {
   //   navigation.navigate('Home');
   // }
@@ -97,8 +97,8 @@ const Login = () => {
                   Don't have an account?
               </Text>
               <TouchableOpacity 
-                // onPress={handleSignUp}
-                onPress={() => navigation.navigate('Signup')}
+                onPress={handleSignUp}
+                // onPress={() => navigation.navigate('Signup')}
               >
                   <Text className="font-semibold text-green"> Sign Up</Text>
               </TouchableOpacity>
