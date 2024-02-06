@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, TextInput, Image, ScrollView, StyleSheet } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 // import { useNavigation } from '@react-navigation/native';
@@ -20,28 +20,34 @@ const Signup = ({ navigation }) => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState();
-  
+  const [loading, setLoading] = useState(true);
+
+
   const registerUser = async () => {
     try {
-      console.log('Attempting to create user...');
-      await firebase.auth().createUserWithEmailAndPassword(email, password);
+      // Start loading
+      setLoading(true);
   
-      console.log('Sending email verification...');
-      await firebase.auth().currentUser.sendEmailVerification({
-        handleCodeInApp: true,
-        url: 'https://everguardian-55395.firebaseapp.com',
-      });
+      console.log('Attempting to create user...');
+      const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
   
       console.log('Storing user data in Firestore...');
-      await firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).set({
+      await firebase.firestore().collection('users').doc(userCredential.user.uid).set({
         firstName,
         lastName,
         phoneNumber,
         email,
       });
   
-      console.log('Verification email sent. Please check your email and verify your account.');
-      
+      console.log('Sending welcome email...');
+      // Call the Cloud Function to send the welcome email
+      await firebase.functions().httpsCallable('sendWelcomeEmail')();
+  
+      console.log('Welcome email sent.');
+  
+      // Stop loading
+      setLoading(false);
+  
       // Navigate to Home screen and pass user data as route parameters
       navigation.navigate('Home', {
         email,
@@ -54,7 +60,8 @@ const Signup = ({ navigation }) => {
       console.error('Error during registration:', error);
       alert(error.message);
     }
-  };  
+  };
+  
 
   return (
     <LinearGradient
