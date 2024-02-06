@@ -20,7 +20,7 @@ const Signup = ({ navigation }) => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState();
-
+  
   const registerUser = async () => {
     try {
       console.log('Attempting to create user...');
@@ -41,19 +41,20 @@ const Signup = ({ navigation }) => {
       });
   
       console.log('Verification email sent. Please check your email and verify your account.');
+      
+      // Navigate to Home screen and pass user data as route parameters
       navigation.navigate('Home', {
         email,
         firstName,
         lastName,
         phoneNumber,
       });
+  
     } catch (error) {
       console.error('Error during registration:', error);
       alert(error.message);
     }
   };  
-  
-  
 
   return (
     <LinearGradient
