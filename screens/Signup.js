@@ -58,6 +58,7 @@ const Signup = ({ navigation }) => {
   
     } catch (error) {
       console.error('Error during registration:', error);
+      console.error('Error message:', error.message); // Log the error message
       alert(error.message);
     }
   };
