@@ -2,21 +2,27 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
 import 'firebase/compat/functions';
-
+ 
 const firebaseConfig = {
-  apiKey: "AIzaSyD5NQr8BSajYfSW2kUNQuTsQAu-XbklCJs",
-  authDomain: "everguardian-55395.firebaseapp.com",
-  projectId: "everguardian-55395",
-  storageBucket: "everguardian-55395.appspot.com",
-  messagingSenderId: "947200429629",
-  appId: "1:947200429629:web:b17721d85005bb80912454",
-  measurementId: "G-MLJK21YNHP"
+  apiKey: "AIzaSyAPCCaGq6jbbKbTv37NdVl-NpxyjQS11Tg",
+  authDomain: "everguardiann-7afa9.firebaseapp.com",
+  projectId: "everguardiann-7afa9",
+  storageBucket: "everguardiann-7afa9.appspot.com",
+  messagingSenderId: "704548573956",
+  appId: "1:704548573956:web:5a46d754fcc5c87466f651"
+};
+
+// Initialize Firebase
+let app;
+if (!firebase.apps.length) {
+    app = firebase.initializeApp(firebaseConfig);
+} else  { 
+    app = firebase.app()
 }
 
-if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-}
+const auth = firebase.auth();
 
 export {
-    firebase
+    firebase,
+    auth
 };

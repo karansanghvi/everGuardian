@@ -4,7 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 // import { useNavigation } from '@react-navigation/native';
 import {ArrowLeftIcon} from 'react-native-heroicons/solid';
-import { firebase } from '../config';
+import { firebase, auth } from '../config';
 
 const Signup = ({ navigation }) => {
 
@@ -24,43 +24,14 @@ const Signup = ({ navigation }) => {
 
 
   const registerUser = async () => {
-    try {
-      // Start loading
-      setLoading(true);
-  
-      console.log('Attempting to create user...');
-      const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
-  
-      console.log('Storing user data in Firestore...');
-      await firebase.firestore().collection('users').doc(userCredential.user.uid).set({
-        firstName,
-        lastName,
-        phoneNumber,
-        email,
-      });
-  
-      console.log('Sending welcome email...');
-      // Call the Cloud Function to send the welcome email
-      await firebase.functions().httpsCallable('sendWelcomeEmail')();
-  
-      console.log('Welcome email sent.');
-  
-      // Stop loading
-      setLoading(false);
-  
-      // Navigate to Home screen and pass user data as route parameters
-      navigation.navigate('Home', {
-        email,
-        firstName,
-        lastName,
-        phoneNumber,
-      });
-  
-    } catch (error) {
-      console.error('Error during registration:', error);
-      console.error('Error message:', error.message); // Log the error message
-      alert(error.message);
-    }
+    auth
+    .createUserWithEmailAndPassword(email, password)
+    .then(userCredentials => {
+      const user = userCredentials.user;
+      console.log(user.email);
+
+    })
+    .catch(error => alert(error.message))
   };
   
 
@@ -91,6 +62,7 @@ const Signup = ({ navigation }) => {
                 placeholder='First Name'
                 onChangeText={(text) => setFirstName(text)}
                 autoCapitalize='none'
+                value={firstName}
                 autoCorrect={false}
               />
             <Text className="text-black ml-1 text-lg">Enter Last Name:</Text>
@@ -100,12 +72,15 @@ const Signup = ({ navigation }) => {
                 onChangeText={(text) => setLastName(text)}
                 autoCapitalize='none'
                 autoCorrect={false}
+                value={lastName}
+
               />           
             <Text className="text-black ml-1 text-lg">Enter Phone Number:</Text>
               <TextInput
                 className="p-4 bg-gray-100 text-black rounded-xl mb-3"
                 placeholder='Phone Number'
                 keyboardType='numeric'
+                value={phoneNumber}
                 onChangeText={(number) => setPhoneNumber(number)}
               />
             <Text className="text-black ml-1 text-lg">Enter Email Address:</Text>
@@ -115,6 +90,7 @@ const Signup = ({ navigation }) => {
                 onChangeText={(text) => setEmail(text)}
                 autoCapitalize='none'
                 autoCorrect={false}
+                value={email}
                 keyboardType='email-address'
               />
             <Text className="text-black ml-1 text-lg">Enter Password:</Text>
@@ -124,6 +100,7 @@ const Signup = ({ navigation }) => {
                 placeholder='Password'
                 onChangeText={(text) => setPassword(text)}
                 autoCapitalize='none'
+                value={password}
                 autoCorrect={false}
               />
               <TouchableOpacity className="flex items-end">
@@ -134,7 +111,7 @@ const Signup = ({ navigation }) => {
               <TouchableOpacity 
                 className="py-3 bg-black rounded-lg"
                 // onPress={registerUser}
-                onPress={() => registerUser(email, firstName, lastName, phoneNumber)}
+                onPress={() => registerUser(email, firstName, lastName, phoneNumber, password)}
               >
                 <Text className="text-lg text-white text-center font-extrabold">
                   Signup

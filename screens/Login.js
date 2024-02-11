@@ -1,16 +1,17 @@
 import { View, Text, TouchableOpacity, TextInput, Image, StyleSheet } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import {ArrowLeftIcon} from 'react-native-heroicons/solid';
-import { firebase } from '../config';
+import { auth, firebase } from '../config';
 
 const Login = () => {
 
   const navigation = useNavigation();
   const handleSignUp = () => {
     navigation.navigate('Signup');
+   
   }
   // const handleLoginButton = () => {
   //   navigation.navigate('Home');
@@ -19,16 +20,37 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  loginUser = async (email, password) => {
-    try 
-    {
-      await firebase.auth().signInWithEmailAndPassword(email, password)
-    } 
-    catch (error)
-    {
-      alert(error.message)
-    }
-  }
+  // loginUser = async (email, password) => {
+  //   try 
+  //   {
+  //     await firebase.auth().signInWithEmailAndPassword(email, password)
+  //   } 
+  //   catch (error)
+  //   {
+  //     alert(error.message)
+  //   }
+  // }
+
+
+  const handleLoginButton = () => {
+    auth
+      .signInWithEmailAndPassword(email, password)
+      .then(userCredentials => {
+        const user = userCredentials.user;
+        console.log(user.email);
+      })
+      .catch(error => alert(error.message));
+  };
+
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(user => {
+      if(user){
+        navigation.navigate("Home")
+      }
+    })
+    return unsubscribe
+  }, [])
 
   return (
     <LinearGradient
@@ -56,6 +78,7 @@ const Login = () => {
               placeholder='Email Address'
               autoCapitalize='none'
               autoCorrect={false}
+              value={email}
               onChangeText={(email) => setEmail(email)}
             />
           <Text className="text-black ml-1 text-lg">Enter Your Password:</Text>
@@ -64,6 +87,7 @@ const Login = () => {
               secureTextEntry
               placeholder='Password'
               autoCapitalize='none'
+              value={password}
               autoCorrect={false}
               onChangeText={(password) => setPassword(password)}
             />
@@ -74,8 +98,8 @@ const Login = () => {
             </TouchableOpacity>
             <TouchableOpacity 
               className="py-3 bg-black rounded-lg"
-              // onPress={handleLoginButton}
-              onPress={() => loginUser(email, password)}
+              onPress={handleLoginButton}
+              // onPress={() => loginUser(email, password)}
             >
               <Text className="text-lg text-white text-center font-extrabold">
                 Login
