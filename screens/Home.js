@@ -12,6 +12,10 @@ const Home = () => {
     alert('SOS button pressed!');
   };
 
+  const handleMedicalRecordsButton = () => {
+    navigation.navigate('MedicalRecords');
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.chatIcon}></View>
@@ -39,7 +43,7 @@ const Home = () => {
         colors={['#007260', '#39B68D']}
         style={styles.sectionContainer}
       >
-        <TouchableOpacity style={styles.appointmentButton} onPress={() => alert('Location Tracking button pressed!')}>
+        <TouchableOpacity style={styles.appointmentButton} onPress={handleMedicalRecordsButton}>
           <Text style={styles.appointmentButtonText}>Medical Records</Text>
         </TouchableOpacity>
       </LinearGradient>
