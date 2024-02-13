@@ -1,13 +1,20 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useNavigation } from '@react-navigation/native';
 
 const Home = () => {
   const [chatMessage, setChatMessage] = useState('');
 
+  const navigation = useNavigation();
+
   const handleSOSPress = () => {
     alert('SOS button pressed!');
   };
+
+  const handleMedicalRecords = () => {
+    navigation.navigate('MedicalRecordsForm');
+  }
 
   return (
     <View style={styles.container}>
@@ -36,7 +43,7 @@ const Home = () => {
         colors={['#007260', '#39B68D']}
         style={styles.sectionContainer}
       >
-        <TouchableOpacity style={styles.appointmentButton} onPress={() => alert('Medical Records button pressed!')}>
+        <TouchableOpacity style={styles.appointmentButton} onPress={handleMedicalRecords}>
           <Text style={styles.appointmentButtonText}>Medical Records</Text>
         </TouchableOpacity>
       </LinearGradient>
