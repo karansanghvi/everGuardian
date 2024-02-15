@@ -10,6 +10,7 @@ import AntDesign from '@expo/vector-icons/AntDesign'
 const MedicalRecords = () => {
 
   const [bloodGroup, setBloodGroup] = useState(null);
+  const [gender, setGender] = useState(null);
 
   const navigation = useNavigation();
   const handleLogin = () => {
@@ -29,6 +30,12 @@ const MedicalRecords = () => {
     { label: 'B-', value: '7' },
     { label: 'AB-', value: '8' },
   ];
+
+  const genderData = [
+    { label: 'Male', value: '1' },
+    { label: 'Female', value: '2' },
+    { label: 'Other', value: '3' },
+  ]
 
   return (
     <LinearGradient
@@ -72,16 +79,28 @@ const MedicalRecords = () => {
                 <AntDesign style={styles.icon} color="black" name="Safety" size={20} />
               )}
             />
-            <Text className="text-black ml-1 text-lg">Enter Last Name:</Text>
-              <TextInput
-                className="p-4 bg-gray-100 text-black rounded-xl mb-3"
-                placeholder='First Name'
-              />           
-            <Text className="text-black ml-1 text-lg">Enter Username:</Text>
-              <TextInput
-                className="p-4 bg-gray-100 text-black rounded-2xl mb-3"
-                placeholder='Username'
-              />
+            <Dropdown
+                style={styles.dropdown}
+                placeholderStyle={styles.placeholderStyle}
+                selectedTextStyle={styles.selectedTextStyle}
+                inputSearchStyle={styles.inputSearchStyle}
+                iconStyle={styles.iconStyle}
+                data={genderData}
+                search
+                maxHeight={300}
+                labelField="label"
+                valueField="value"
+                placeholder="Select Gender"
+                searchPlaceholder='Search...'
+                value={gender}
+                onChange={item => {
+                  setGender(item.value);
+                }}
+                renderLeftIcon={() => (
+                  <AntDesign style={styles.icon} color="black" name="Safety" size={20} />
+                )}
+            />          
+            <Text className="text-black ml-1 text-lg">Enter Birth Date:</Text>
             <Text className="text-black ml-1 text-lg">Enter Phone Number:</Text>
               <TextInput
                 className="p-4 bg-gray-100 text-black rounded-xl mb-3"

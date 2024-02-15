@@ -11,6 +11,7 @@
   "dependencies": {
     "@expo/vector-icons": "^13.0.0",
     "@react-native-community/checkbox": "^0.5.17",
+    "@react-native-community/datetimepicker": "github:react-native-community/datetimepicker",
     "@react-navigation/native": "^6.1.9",
     "@react-navigation/native-stack": "^6.9.17",
     "@react-navigation/stack": "^6.3.20",
@@ -22,6 +23,8 @@
     "nativewind": "^2.0.11",
     "react": "18.2.0",
     "react-native": "^0.73.4",
+    "react-native-date-picker": "^4.3.6",
+    "react-native-datepicker": "^1.7.2",
     "react-native-element-dropdown": "^2.10.1",
     "react-native-gesture-handler": "~2.12.0",
     "react-native-heroicons": "^4.0.0"
