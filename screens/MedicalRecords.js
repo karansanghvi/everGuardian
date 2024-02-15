@@ -1,4 +1,6 @@
-import { View, Text, TouchableOpacity, TextInput, Image, ScrollView, StyleSheet } from 'react-native'
+import { 
+  View, Text, TouchableOpacity, TextInput, Image, ScrollView, StyleSheet, Platform, Button
+ } from 'react-native'
 import React, { useState } from 'react'
 import { LinearGradient } from 'expo-linear-gradient'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -6,19 +8,34 @@ import { useNavigation } from '@react-navigation/native'
 import {ArrowLeftIcon} from 'react-native-heroicons/solid'
 import { Dropdown } from 'react-native-element-dropdown'
 import AntDesign from '@expo/vector-icons/AntDesign'
+// import DateTimePicker from '@react-native-community/datetimepicker'
 
 const MedicalRecords = () => {
 
   const [bloodGroup, setBloodGroup] = useState(null);
   const [gender, setGender] = useState(null);
+  // const [date, setDate] = useState(new Date());
+  // const [showDatePicker, setShowDatePicker] = useState(false);
 
   const navigation = useNavigation();
+
   const handleLogin = () => {
     navigation.navigate('Login');
   }
+
   const handleSignupButton = () => {
     navigation.navigate('Home');
   }
+
+  // const handleDateChange = (event, selectedDate) => {
+  //   const currentDate = selectedDate || date;
+  //   setShowDatePicker(Platform === 'ios');
+  //   setDate(currentDate);
+  // };
+
+  // const showDatePickerModal = () => {
+  //   setShowDatePicker(true);
+  // };
 
   const bloodGroupData = [
     { label: 'A+', value: '1' },
@@ -55,7 +72,7 @@ const MedicalRecords = () => {
           <Text className="text-4xl text-white font-extrabold mt-4">Medical Records</Text>
         </View>
       </SafeAreaView>
-      <ScrollView style={{ flex: 1 }}>
+      {/* <ScrollView style={{ flex: 1 }}> */}
         <View className="rounded-tl-2xl rounded-tr-2xl flex-1 bg-white px-8 pt-8 mt-6">
           <View className="form space-y-2">
             <Dropdown
@@ -100,59 +117,54 @@ const MedicalRecords = () => {
                   <AntDesign style={styles.icon} color="black" name="Safety" size={20} />
                 )}
             />          
-            <Text className="text-black ml-1 text-lg">Enter Birth Date:</Text>
-            <Text className="text-black ml-1 text-lg">Enter Phone Number:</Text>
+            {/* <Text className="text-black ml-1 text-lg">Enter Birth Date:</Text>
+              <Button
+                title="Select Date"
+                onPress={showDatePickerModal}
+              />
+              {
+                showDatePicker && (
+                  <DateTimePicker
+                    testID='dateTimePicker'
+                    value={date}
+                    mode='date'
+                    is24Hour={true}
+                    display='default'
+                    onChange={handleDateChange}
+                  />
+                )
+              } */}
+            <Text className="text-black ml-1 text-lg">Enter Address:</Text>
               <TextInput
                 className="p-4 bg-gray-100 text-black rounded-xl mb-3"
-                placeholder='Phone Number'
-                keyboardType='numeric'
+                placeholder='Address'
               />
-            <Text className="text-black ml-1 text-lg">Enter Email Address:</Text>
+            <Text className="text-black ml-1 text-lg">Any Alergy?</Text>
               <TextInput
                 className="p-4 bg-gray-100 text-black rounded-xl mb-3"
-                placeholder='Email Address'
+                placeholder='Alergy'
               />
-            <Text className="text-black ml-1 text-lg">Enter Password:</Text>
+            <Text className="text-black ml-1 text-lg">Enter Current Medications:</Text>
               <TextInput
                 className="p-4 bg-gray-100 text-black rounded-xl mb-3"
-                secureTextEntry
-                placeholder='Password'
+                placeholder='Current Medications'
               />
-              <TouchableOpacity className="flex items-end">
-                <Text className="text-black mb-2">
-                  Forgot Password?
-                </Text>
-              </TouchableOpacity>
+            <Text className="text-black ml-1 text-lg">Enter Current Medications:</Text>
+              <TextInput
+                className="p-4 bg-gray-100 text-black rounded-xl mb-3"
+                placeholder='Current Medications'
+              />
               <TouchableOpacity 
                 className="py-3 bg-black rounded-lg"
                 onPress={handleSignupButton}
               >
                 <Text className="text-lg text-white text-center font-extrabold">
-                  Signup
+                  Submit
                 </Text>
               </TouchableOpacity>
-              <View style={styles.separator}>
-                <View style={styles.line}></View>
-                <Text style={styles.orText}>Or</Text>
-                <View style={styles.line}></View>
-              </View>
-              <TouchableOpacity className="p-2 bg-gray-100 rounded-2xl flex items-center">
-                <View className="flex-row justify-center items-center space-x-3">
-                  <Image source={require('../assets/images/google.png')} className="w-10 h-10" />
-                  <Text className="text-black text-lg ml-2">Sign In With Google</Text>
-                </View>
-              </TouchableOpacity>
-              <View className="flex-row justify-center mt-7">
-                <Text className="text-gray-500 font-semibold">
-                    Already have an account?
-                </Text>
-                <TouchableOpacity onPress={handleLogin}>
-                    <Text className="font-semibold text-green mb-8"> Login</Text>
-                </TouchableOpacity>
-            </View>
           </View>
         </View>
-      </ScrollView>
+      {/* </ScrollView> */}
     </LinearGradient>
   )
 }
