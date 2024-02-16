@@ -70,7 +70,7 @@ const Signup = ({ navigation }) => {
   // }
 
   return (
-    <LinearGradient className="flex-1 bg-white" colors={["#007260", "#39B68D"]}>
+    <LinearGradient style={{ flex: 1, backgroundColor: "#007260" }} colors={["#007260", "#39B68D"]}>
       <SafeAreaView className="flex">
         <View className="flex-row justify-start">
           <TouchableOpacity
@@ -140,22 +140,25 @@ const Signup = ({ navigation }) => {
             <Text className="text-black ml-1 text-lg">Select User Type:</Text>
             <View style={styles.radioContainer}>
               <TouchableOpacity
-                style={[
-                  styles.radioButton,
-                  userType === "elderly" && styles.selectedRadioButton,
-                ]}
                 onPress={() => setUserType("elderly")}
               >
-                <Text style={styles.radioText}>Elderly</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[
+                <View style={[
                   styles.radioButton,
-                  userType === "guardian" && styles.selectedRadioButton,
-                ]}
+                  userType === "elderly" && styles.selectedRadioButton,
+                ]}>
+                  <Text style={styles.radioText}>Elderly</Text>
+                </View>
+              </TouchableOpacity>
+
+              <TouchableOpacity
                 onPress={() => setUserType("guardian")}
               >
-                <Text style={styles.radioText}>Guardian</Text>
+                <View style={[
+                  styles.radioButton,
+                  userType === "guardian" && styles.selectedRadioButton,
+                ]}>
+                  <Text style={styles.radioText}>Guardian</Text>
+                </View>
               </TouchableOpacity>
             </View>
             <TouchableOpacity className="flex items-end">
@@ -229,7 +232,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'black',
     padding: 10,
-    borderRadius: 5,
   },
   selectedRadioButton: {
     backgroundColor: 'black',
