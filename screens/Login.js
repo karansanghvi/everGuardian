@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { ArrowLeftIcon } from 'react-native-heroicons/solid';
 import { auth } from '../config';
+import * as MailComposer from 'expo-mail-composer';
 
 const Login = () => {
   const navigation = useNavigation();
@@ -18,6 +19,9 @@ const Login = () => {
   const handleLoginButton = async () => {
     try {
       const userCredentials = await auth.signInWithEmailAndPassword(email, password);
+      // Send a welcome email
+      sendWelcomeEmail(email);
+
       // Navigate to the Home screen after successful login
       navigation.navigate("Profile");
     } catch (error) {
@@ -26,6 +30,16 @@ const Login = () => {
     }
   };
 
+  const sendWelcomeEmail = (userEmail) => {
+    const message = {
+      subject: 'Welcome to Your App!',
+      body: 'Thank you for logging in. Enjoy using our app!',
+      isHtml: false,
+      recipients: [userEmail],
+    };
+
+    MailComposer.composeAsync(message);
+  };
   return (
     <LinearGradient className="flex-1 bg-white" colors={['#007260', '#39B68D']}>
       <SafeAreaView className="flex">
