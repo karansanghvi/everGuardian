@@ -3,7 +3,8 @@ import Profile from "./screens/Profile";
 import { firebase,firestore } from "./config";
 import { useEffect, useState } from "react";
 import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { Login, Welcome, Signup, Home, MedicalRecords } from './screens';
 
 const Stack = createNativeStackNavigator();
 
@@ -64,6 +65,13 @@ function App() {
           component={Profile}
           options={{
             headerShown: false,
+          }}
+        />
+        <Stack.Screen 
+          name="MedicalRecords"
+          component={MedicalRecords}
+          options={{
+            headerShown: false
           }}
         />
       </Stack.Navigator>
