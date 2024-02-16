@@ -115,6 +115,8 @@ const Profile = ({ navigation }) => {
     </LinearGradient>
   );
 };
+export default Profile;
+
 
 const styles = StyleSheet.create({
   profileInfo: {
@@ -162,4 +164,3 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Profile;

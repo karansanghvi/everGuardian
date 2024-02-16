@@ -1,13 +1,13 @@
-import { Login, Welcome, Signup, Home, Profile } from './screens';
-import { firebase,firestore } from './config';
-import { useEffect, useState } from 'react';
+import { Login, Welcome, Signup, Home } from "./screens";
+import Profile from "./screens/Profile";
+import { firebase,firestore } from "./config";
+import { useEffect, useState } from "react";
 import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-const Stack = createNativeStackNavigator()
+const Stack = createNativeStackNavigator();
 
 function App() {
-
   const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState(null);
 
@@ -25,50 +25,47 @@ function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName='Welcome'
-      >
+      <Stack.Navigator initialRouteName="Welcome">
         {!user ? (
           <>
-            <Stack.Screen 
+            <Stack.Screen
               name="Welcome"
               component={Welcome}
               options={{
-                headerShown: false
+                headerShown: false,
               }}
             />
-            <Stack.Screen 
+            <Stack.Screen
               name="Login"
               component={Login}
               options={{
-                headerShown: false
+                headerShown: false,
               }}
             />
-              <Stack.Screen 
-              name="Profile"
-              component={Profile}
-              options={{
-                headerShown: false
-              }}
-            />
-          
-            <Stack.Screen 
+            <Stack.Screen
               name="Signup"
               component={Signup}
               options={{
-                headerShown: false
+                headerShown: false,
               }}
             />
           </>
         ) : (
-          <Stack.Screen 
+          <Stack.Screen
             name="Home"
             component={Home}
             options={{
-              headerShown: false
+              headerShown: false,
             }}
           />
         )}
+        <Stack.Screen
+          name="Profile"
+          component={Profile}
+          options={{
+            headerShown: false,
+          }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
