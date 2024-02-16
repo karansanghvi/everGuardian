@@ -1,10 +1,9 @@
-import { Login, Welcome, Signup, Home } from "./screens";
+import { Login, Welcome, Signup, Home, MedicalRecords } from "./screens";
 import Profile from "./screens/Profile";
 import { firebase,firestore } from "./config";
 import { useEffect, useState } from "react";
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Login, Welcome, Signup, Home, MedicalRecords } from './screens';
 
 const Stack = createNativeStackNavigator();
 
