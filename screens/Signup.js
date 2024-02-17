@@ -93,7 +93,12 @@ const Signup = ({ navigation }) => {
             <TextInput
               className="p-4 bg-gray-100 text-black rounded-xl mb-3"
               placeholder="First Name"
-              onChangeText={(text) => setFirstName(text)}
+              onChangeText={
+                (text) => {
+                  const alphabetsOnlyForFirstName = text.replace(/[^A-Za-z]/g, '');
+                  setFirstName(alphabetsOnlyForFirstName);
+                }
+              }
               autoCapitalize="none"
               value={firstName}
               autoCorrect={false}
@@ -102,7 +107,12 @@ const Signup = ({ navigation }) => {
             <TextInput
               className="p-4 bg-gray-100 text-black rounded-xl mb-3"
               placeholder="Last Name"
-              onChangeText={(text) => setLastName(text)}
+              onChangeText={
+                (text) => {
+                  const alphabetsOnlyForLastName = text.replace(/[^A-Za-z]/g, '');
+                  setLastName(alphabetsOnlyForLastName)
+                }
+              }
               autoCapitalize="none"
               autoCorrect={false}
               value={lastName}
@@ -113,7 +123,12 @@ const Signup = ({ navigation }) => {
               placeholder="Phone Number"
               keyboardType="numeric"
               value={phoneNumber}
-              onChangeText={(number) => setPhoneNumber(number)}
+              onChangeText={
+                (number) => {
+                  const numericOnlyForPhoneNumber = number.replace(/[^0-9]/g, '');
+                  setPhoneNumber(`+91${numericOnlyForPhoneNumber}`);
+                }
+              }
             />
             <Text className="text-black ml-1 text-lg">
               Enter Email Address:
@@ -121,11 +136,17 @@ const Signup = ({ navigation }) => {
             <TextInput
               className="p-4 bg-gray-100 text-black rounded-xl mb-3"
               placeholder="Email Address"
-              onChangeText={(text) => setEmail(text)}
               autoCapitalize="none"
               autoCorrect={false}
               value={email}
               keyboardType="email-address"
+              onChangeText={(text) => {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if(emailRegex.test(text) || text === '') 
+                {
+                  setEmail(text);
+                }
+              }}
             />
             <Text className="text-black ml-1 text-lg">Enter Password:</Text>
             <TextInput

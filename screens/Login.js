@@ -61,9 +61,15 @@ const Login = () => {
           <TextInput
             className="p-4 bg-gray-100 text-black rounded-xl mb-3"
             placeholder='Email'
-            onChangeText={(text) => setEmail(text)}
             autoCapitalize='none'
             keyboardType='email-address'
+            onChangeText={(text) => {
+              const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+              if(emailRegex.test(text) || text === '') 
+              {
+                setEmail(text);
+              }
+            }}
           />
           <Text className="text-black ml-1 text-lg">Enter Your Password:</Text>
           <TextInput
