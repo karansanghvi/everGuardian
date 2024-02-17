@@ -40,6 +40,10 @@ const Login = () => {
 
     MailComposer.composeAsync(message);
   };
+
+  const handleForgotPassword = () => {
+    navigation.navigate('ForgotPassword')
+  }
   return (
     <LinearGradient className="flex-1 bg-white" colors={['#007260', '#39B68D']}>
       <SafeAreaView className="flex">
@@ -78,7 +82,9 @@ const Login = () => {
             placeholder='Password'
             onChangeText={(text) => setPassword(text)}
           />
-          <TouchableOpacity className="flex items-end">
+          <TouchableOpacity 
+            onPress={handleForgotPassword}
+            className="flex items-end">
             <Text className="text-black mb-5">Forgot Password?</Text>
           </TouchableOpacity>
           <TouchableOpacity
