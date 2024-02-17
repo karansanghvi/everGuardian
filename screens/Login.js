@@ -23,7 +23,7 @@ const Login = () => {
       sendWelcomeEmail(email);
 
       // Navigate to the Home screen after successful login
-      navigation.navigate("Profile");
+      navigation.navigate('Home');
     } catch (error) {
       console.error('Login failed:', error);
       // Handle login error (e.g., show an error message)

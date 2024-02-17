@@ -4,6 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeftIcon } from 'react-native-heroicons/solid';
 import { auth, firestore } from '../config';
+import { firebase } from '../config';
 
 const Profile = ({ navigation }) => {
   const [user, setUser] = useState(null);
@@ -42,6 +43,15 @@ const Profile = ({ navigation }) => {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      await firebase.auth().signOut();
+      navigation.navigate('Welcome')
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
+  };
+
   return (
     <LinearGradient className="flex-1 bg-white" colors={['#007260', '#39B68D']}>
       <SafeAreaView className="flex">
@@ -54,10 +64,9 @@ const Profile = ({ navigation }) => {
           </TouchableOpacity>
         </View>
         <View className="flex-row justify-center mt-2">
-          <Text className="text-4xl text-white font-extrabold mt-4">Profile</Text>
+          <Text className="text-4xl text-white font-extrabold mt-4">Your Profile</Text>
         </View>
       </SafeAreaView>
-      <ScrollView style={{ flex: 1 }}>
         <View className="rounded-tl-2xl rounded-tr-2xl flex-1 bg-white px-8 pt-8 mt-6">
           {user && (
             <>
@@ -95,23 +104,28 @@ const Profile = ({ navigation }) => {
               </View>
               {editing ? (
                 <TouchableOpacity
-                  style={styles.saveButton}
+                  className="py-3 bg-black rounded-lg"
                   onPress={saveChanges}
                 >
-                  <Text style={styles.saveButtonText}>Save Changes</Text>
+                  <Text className="text-lg text-white text-center font-extrabold">Save Changes</Text>
                 </TouchableOpacity>
               ) : (
                 <TouchableOpacity
-                  style={styles.editButton}
+                  className="py-3 bg-black rounded-lg"
                   onPress={() => setEditing(true)}
                 >
-                  <Text style={styles.editButtonText}>Edit Profile</Text>
+                  <Text className="text-lg text-white text-center font-extrabold">Edit Profile</Text>
                 </TouchableOpacity>
               )}
+              <TouchableOpacity
+                style={styles.logoutButton}
+                onPress={() => handleLogout()}
+              >
+                <Text style={styles.logoutButtonText}>Log Out</Text>
+              </TouchableOpacity>
             </>
           )}
         </View>
-      </ScrollView>
     </LinearGradient>
   );
 };
@@ -126,6 +140,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: 'black',
     marginBottom: 5,
+    fontWeight: 'bold',
   },
   value: {
     fontSize: 16,
@@ -140,27 +155,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: 'black',
   },
-  editButton: {
-    backgroundColor: '#007260',
-    padding: 10,
-    borderRadius: 5,
-    marginTop: 10,
+  logoutButton: {
+    backgroundColor: 'black',
+    paddingVertical: 15,
+    borderRadius: 10,
+    marginTop: 20,
+    alignItems: 'center',
   },
-  editButtonText: {
+  logoutButtonText: {
     color: 'white',
-    fontSize: 16,
-    textAlign: 'center',
-  },
-  saveButton: {
-    backgroundColor: '#39B68D',
-    padding: 10,
-    borderRadius: 5,
-    marginTop: 10,
-  },
-  saveButtonText: {
-    color: 'white',
-    fontSize: 16,
-    textAlign: 'center',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
 

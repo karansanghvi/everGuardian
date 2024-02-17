@@ -16,11 +16,20 @@ const Home = () => {
     navigation.navigate('MedicalRecords');
   }
 
+  const handleProfile = () => {
+    navigation.navigate('Profile')
+  }
+
   return (
     <View style={styles.container}>
-      <View style={styles.chatIcon}></View>
-      <Text style={styles.text}>Welcome back! We're glad to see you again!</Text>
-
+      <LinearGradient
+        colors={['#007260', '#39B68D']}
+        style={styles.sectionContainer}
+      >
+        <TouchableOpacity style={styles.appointmentButton} onPress={handleProfile}>
+          <Text style={styles.appointmentButtonText}>Profile</Text>
+        </TouchableOpacity>
+      </LinearGradient>
       <LinearGradient
         colors={['#007260', '#39B68D']}
         style={styles.sectionContainer}
