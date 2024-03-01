@@ -1,4 +1,3 @@
-// Import the necessary components and functions
 import {
   View,
   Text,
@@ -23,36 +22,60 @@ const Signup = ({ navigation }) => {
   const [userType, setUserType] = useState("");
 
   // Function to handle user sign-up
+  // const handleSignUp = async () => {
+  //   try {
+  //     const userCredentials = await auth.createUserWithEmailAndPassword(
+  //       email,
+  //       password
+  //     );
+  //     const user = userCredentials.user;
+  
+  //     console.log('User created:', user);
+  
+  //     // Add user data to Firestore
+  //     await firestore
+  //       .collection("users")
+  //       .doc(user.uid)
+  //       .set({
+  //         name: `${firstName} ${lastName}`,
+  //         phone: phoneNumber,
+  //         email: user.email,
+  //         userId: user.uid,
+  //         userType: userType,
+  //       });
+  
+  //     console.log('Firestore data set successfully');
+  
+  //     navigation.navigate("Profile");
+  //     navigation.navigate('Home', { userName: `${firstName}` });
+  //   } catch (error) {
+  //     console.error('Error during sign-up:', error);
+  //     alert(error.message);
+  //   }
+  // };
+
   const handleSignUp = async () => {
     try {
-      const userCredentials = await auth.createUserWithEmailAndPassword(
-        email,
-        password
-      );
+      const userCredentials = await auth.createUserWithEmailAndPassword(email, password);
       const user = userCredentials.user;
   
-      console.log('User created:', user);
-  
       // Add user data to Firestore
-      await firestore
-        .collection("users")
-        .doc(user.uid)
-        .set({
-          name: `${firstName} ${lastName}`,
-          phone: phoneNumber,
-          email: user.email,
-          userId: user.uid,
-          userType: userType,
-        });
+      await firestore.collection('users').doc(user.uid).set({
+        name: `${firstName} ${lastName}`,
+        phone: phoneNumber,
+        email: user.email,
+        userId: user.uid,
+        userType: userType,
+      });
   
-      console.log('Firestore data set successfully');
-  
-      navigation.navigate("Profile");
+      // Pass user's name as a param to the 'Home' screen using navigation.navigate
+      navigation.navigate('Home', { firstName: firstName }); // Use the same prop name
     } catch (error) {
       console.error('Error during sign-up:', error);
       alert(error.message);
     }
   };
+  
   
   // Function to handle user sign-out
   // const handleSignOut = () => {

@@ -5,6 +5,9 @@ import { useEffect, useState } from "react";
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import ForgotPassword from "./screens/ForgotPassword";
+import MedicalReminders from "./screens/MedicalReminders";
+import LocationTracking from "./screens/LocationTracking";
+import ActivityTracking from "./screens/ActivityTracking";
 
 const Stack = createNativeStackNavigator();
 
@@ -77,6 +80,27 @@ function App() {
         <Stack.Screen 
           name="MedicalRecords"
           component={MedicalRecords}
+          options={{
+            headerShown: false
+          }}
+        />
+        <Stack.Screen
+          name="MedicalReminders"
+          component={MedicalReminders}
+          options={{
+            headerShown: false
+          }}
+        />
+        <Stack.Screen
+          name="LocationTracking"
+          component={LocationTracking}
+          options={{
+            headerShown: false
+          }}
+        />
+        <Stack.Screen
+          name="ActivityTracking"
+          component={ActivityTracking}
           options={{
             headerShown: false
           }}
