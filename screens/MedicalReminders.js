@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   SafeAreaView,
@@ -7,13 +7,15 @@ import {
   TouchableOpacity,
   Modal,
   TextInput,
-  Button,
+  Platform,
 } from 'react-native';
 import { ArrowLeftIcon } from "react-native-heroicons/solid";
 import { useNavigation } from '@react-navigation/native';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import Plus from '../components/Plus';
+// import * as Notifications from 'expo-notifications';
+// import moment from 'moment-timezone';
 
 LocaleConfig.locales['en'] = {
   monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
@@ -33,6 +35,25 @@ export default function MedicalReminders() {
   const [calendarDate, setCalendarDate] = useState('');
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
   const [selectedTime, setSelectedTime] = useState(null);
+  const [submittedData, setSubmittedData] = useState([]);
+
+  // useEffect(() => {
+  //   // Request permissions for notifications
+  //   (async () => {
+  //     const { status } = await Notifications.requestPermissionsAsync();
+  //     if (status !== 'granted') {
+  //       alert('Permission to receive notifications was denied!');
+  //     }
+  //     if (Platform.OS === 'android') {
+  //       Notifications.setNotificationChannelAsync('reminders', {
+  //         name: 'Reminders',
+  //         importance: Notifications.AndroidImportance.HIGH,
+  //         vibrationPattern: [0, 250, 250, 250],
+  //         lightColor: '#FF231F7C',
+  //       });
+  //     }
+  //   })();
+  // }, []);
 
   const onDayPress = (day) => {
     setSelectedDate(day.dateString);
@@ -61,14 +82,75 @@ export default function MedicalReminders() {
   };
 
   const handleConfirm = (time) => {
-    selectedTime(time);
+    setSelectedTime(time);
     hideDatePicker();
     console.log(time);
   };
 
-  const handleSubmitForm = () => {
-    console.log('Your Reminder:', reminderData);
-    console.log('Your Notes:', notesData);
+  // const scheduleAlarm = async (title, body, trigger) => {
+  //   try {
+  //     await Notifications.scheduleNotificationAsync({
+  //       content: {
+  //         title,
+  //         body,
+  //       },
+  //       trigger,
+  //     });
+  //   } catch(error) {
+  //     console.error('Error scheduling notification: ', error);
+  //   }
+  // };
+
+  const handleSubmitForm = async () => {
+    // const { status } = await Notifications.getPermissionsAsync();
+    // if (status !== 'granted') {
+    //   alert('Permission to receive notifications is required');
+    //   return;
+    // }
+  
+    // console.log('Your Reminder:', reminderData);
+    // console.log('Your Notes:', notesData);
+    if(!calendarDate || !reminderData || !notesData) {
+      alert("please fill in all the fields");
+      return;
+    }
+
+    const newReminder = {
+      date: calendarDate,
+      reminder: reminderData,
+      notes: notesData,
+      time: selectedTime ? selectedTime.toLocaleTimeString() : 'None',
+    };
+  
+    // if (selectedTime) {
+    //   const title = 'Reminder';
+    //   const body = `Time to ${reminderData}`;
+    //   const trigger = new Date(moment(selectedTime).format()); 
+  
+    //   scheduleAlarm(title, body, { time: trigger });
+    // }
+
+    // const submittedData = {
+    //   date: calendarDate,
+    //   reminder: reminderData,
+    //   notes: notesData,
+    //   time: selectedTime ? selectedTime.toLocaleTimeString() : 'None',
+    // };
+
+    // setSubmittedData(prevData => [...prevData, newReminder]);
+    setSubmittedData((prevData) => {
+      const existingDataIndex = prevData.findIndex((item) => item.date === calendarDate);
+
+      if (existingDataIndex !== -1) {
+        const newData = [...prevData];
+        newData[existingDataIndex].reminders.push(newReminder);
+
+        return newData;
+      } else {
+        return [...prevData, { date: calendarDate, reminders: [newReminder] }];
+      }
+    });
+
     setShowPopup(false);
   };
 
@@ -92,6 +174,36 @@ export default function MedicalReminders() {
             }}
             style={styles.calendar}
           />
+          <View>
+            <Text className="mt-4 text-black font-extrabold text-lg">Your Reminders:</Text>
+            {submittedData && submittedData.length > 0 ? (
+              <View className="mb-40 ml-2">
+                {submittedData.map((dateData, index) => (
+                  <View key={index}>
+                    <Text className="text-black text-md font-semibold mt-4">Reminders for {dateData.date}:</Text>
+                    <View style={styles.submittedDataContainer}>
+                      {dateData.reminders.map((data, reminderIndex) => (
+                        <View key={reminderIndex}>
+                          <Text style={styles.submittedData}>Reminder: {data.reminder}</Text>
+                          <Text style={styles.submittedData}>Notes: {data.notes}</Text>
+                          <Text style={styles.submittedData}>Time: {data.time}</Text>
+                        </View>
+                      ))}
+                    </View>
+                  </View>
+                ))}
+              </View>
+            ) : (
+              <View className="mt-10">
+                <Text className="text-black text-lg font-extrabold text-center">
+                  {selectedDate ? 'No reminders' : 'Select a date to view reminders'}
+                </Text>
+              </View>
+            )}
+          </View>
+        </View>
+        <View className="mb-40 ml-6">
+        
         </View>
         <View style={styles.plusContainer}>
           <TouchableOpacity
@@ -127,10 +239,13 @@ export default function MedicalReminders() {
                 required
               />
 
-              <Button
-                title="Show Time Picker"
-                onPress={showDatePicker}
-              />
+              <Text className="text-black ml-1 text-md mb-1">Time Of Reminder:</Text>
+                <TouchableOpacity
+                  style={styles.submitButton}
+                  onPress={showDatePicker}
+                >
+                  <Text style={styles.submitButtonText}>Select Time</Text>
+                </TouchableOpacity>
               <Text>Selected Time: {selectedTime ? selectedTime.toLocaleTimeString() : 'None'}</Text>
               <DateTimePickerModal
                 isVisible={isDatePickerVisible}
@@ -205,7 +320,7 @@ const styles = StyleSheet.create({
   },
   popupContainer: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
@@ -213,8 +328,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     padding: 20,
     borderRadius: 10,
-    width: '80%',
-    alignSelf: 'center',
+    width: '100%',
+    alignSelf: 'stretch',
   },
   popupTitle: {
     fontSize: 18,
@@ -252,4 +367,15 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: '700',
   },
+  submittedDataContainer: {
+    backgroundColor: 'white',
+    // marginLeft: 1,
+    marginRight: 14,
+    paddingTop: 10,
+    borderRadius: 8,
+  },
+  submittedData: {
+    paddingLeft: 10,
+    marginBottom: 5,
+  }
 });
