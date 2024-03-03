@@ -143,10 +143,10 @@ const MedicalRecords = () => {
                 className="p-4 bg-gray-100 text-black rounded-xl mb-3"
                 placeholder='Current Medications'
               />
-            <Text className="text-black ml-1 text-lg">Enter Current Medications:</Text>
+            <Text className="text-black ml-1 text-lg">Enter Current Diseases:</Text>
               <TextInput
                 className="p-4 bg-gray-100 text-black rounded-xl mb-3"
-                placeholder='Current Medications'
+                placeholder='Current Diseases'
               />
               <TouchableOpacity 
                 className="py-3 bg-black rounded-lg mb-4"
