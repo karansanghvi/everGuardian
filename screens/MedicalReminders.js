@@ -7,10 +7,12 @@ import {
   TouchableOpacity,
   Modal,
   TextInput,
+  Button,
 } from 'react-native';
 import { ArrowLeftIcon } from "react-native-heroicons/solid";
 import { useNavigation } from '@react-navigation/native';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import Plus from '../components/Plus';
 
 LocaleConfig.locales['en'] = {
@@ -29,6 +31,8 @@ export default function MedicalReminders() {
   const [reminderData, setReminderData] = useState('');
   const [notesData, setNotesData] = useState('');
   const [calendarDate, setCalendarDate] = useState('');
+  const [isDatePickerVisible, setDatePickerVisible] = useState(false);
+  const [selectedTime, setSelectedTime] = useState(null);
 
   const onDayPress = (day) => {
     setSelectedDate(day.dateString);
@@ -44,8 +48,22 @@ export default function MedicalReminders() {
       setCalendarDate(formattedDate);
       setShowPopup(true);
     } else {
-      alert("Please select a date");
+      alert("Please select a date to create a reminder.");
     }
+  };
+
+  const showDatePicker = () => {
+    setDatePickerVisible(true);
+  };
+
+  const hideDatePicker = () => {
+    setDatePickerVisible(false);
+  };
+
+  const handleConfirm = (time) => {
+    selectedTime(time);
+    hideDatePicker();
+    console.log(time);
   };
 
   const handleSubmitForm = () => {
@@ -108,6 +126,19 @@ export default function MedicalReminders() {
                 onChangeText={(text) => setNotesData(text)}
                 required
               />
+
+              <Button
+                title="Show Time Picker"
+                onPress={showDatePicker}
+              />
+              <Text>Selected Time: {selectedTime ? selectedTime.toLocaleTimeString() : 'None'}</Text>
+              <DateTimePickerModal
+                isVisible={isDatePickerVisible}
+                mode="time"
+                onConfirm={handleConfirm}
+                onCancel={hideDatePicker}
+              />
+
               <View className="flex-row justify-center gap-4">
                 <TouchableOpacity
                   style={styles.submitButton}
