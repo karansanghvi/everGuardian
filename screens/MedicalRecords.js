@@ -2,7 +2,6 @@ import {
   View, Text, TouchableOpacity, TextInput, Image, ScrollView, StyleSheet, Platform, Button
  } from 'react-native'
 import React, { useState } from 'react'
-import { LinearGradient } from 'expo-linear-gradient'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
 import {ArrowLeftIcon} from 'react-native-heroicons/solid'
@@ -55,24 +54,19 @@ const MedicalRecords = () => {
   ]
 
   return (
-    <LinearGradient
-      className="flex-1 bg-white"
-      colors={['#007260', '#39B68D']} 
-    >
-      <SafeAreaView className="flex">
-        <View className="flex-row justify-start">
-          <TouchableOpacity 
+    <>
+      <SafeAreaView className="flex bg-white">
+        <View className="flex-row justify-start mt-4">
+          <TouchableOpacity
             onPress={() => navigation.goBack()}
             className="bg-black p-2 rounded-tr-2xl rounded-bl-2xl ml-4 mt-4"
           >
-            <ArrowLeftIcon size="20" color="white" />
+            <ArrowLeftIcon size={20} color="white" />
           </TouchableOpacity>
-        </View>
-        <View className="flex-row justify-center mt-2">
-          <Text className="text-4xl text-white font-extrabold mt-4">Medical Records</Text>
+          <Text style={styles.title}>Medical Records</Text>
         </View>
       </SafeAreaView>
-      {/* <ScrollView style={{ flex: 1 }}> */}
+      <ScrollView style={{ flex: 1 }} className="bg-white">
         <View className="rounded-tl-2xl rounded-tr-2xl flex-1 bg-white px-8 pt-8 mt-6">
           <View className="form space-y-2">
             <Dropdown
@@ -155,7 +149,7 @@ const MedicalRecords = () => {
                 placeholder='Current Medications'
               />
               <TouchableOpacity 
-                className="py-3 bg-black rounded-lg"
+                className="py-3 bg-black rounded-lg mb-4"
                 onPress={handleSignupButton}
               >
                 <Text className="text-lg text-white text-center font-extrabold">
@@ -164,8 +158,8 @@ const MedicalRecords = () => {
               </TouchableOpacity>
           </View>
         </View>
-      {/* </ScrollView> */}
-    </LinearGradient>
+      </ScrollView>
+    </>
   )
 }
 
@@ -183,6 +177,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'lightgray',
     marginHorizontal: 4,
   },
+  title: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#1d1d1d',
+    marginTop: 20,
+    marginLeft: 60,
+  },
   orText: {
     color: 'black',
     fontSize: 16,
@@ -192,6 +193,7 @@ const styles = StyleSheet.create({
     height: 50,
     borderBottomColor: 'gray',
     borderBottomWidth: 0.5,
+    marginTop: -42,
   },
   icon: {
     marginRight: 5,
