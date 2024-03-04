@@ -35,24 +35,6 @@ export default function MedicalReminders() {
   const [selectedTime, setSelectedTime] = useState(null);
   const [submittedData, setSubmittedData] = useState([]);
 
-  // useEffect(() => {
-  //   // Request permissions for notifications
-  //   (async () => {
-  //     const { status } = await Notifications.requestPermissionsAsync();
-  //     if (status !== 'granted') {
-  //       alert('Permission to receive notifications was denied!');
-  //     }
-  //     if (Platform.OS === 'android') {
-  //       Notifications.setNotificationChannelAsync('reminders', {
-  //         name: 'Reminders',
-  //         importance: Notifications.AndroidImportance.HIGH,
-  //         vibrationPattern: [0, 250, 250, 250],
-  //         lightColor: '#FF231F7C',
-  //       });
-  //     }
-  //   })();
-  // }, []);
-
   const onDayPress = (day) => {
     setSelectedDate(day.dateString);
   };
@@ -85,29 +67,7 @@ export default function MedicalReminders() {
     console.log(time);
   };
 
-  // const scheduleAlarm = async (title, body, trigger) => {
-  //   try {
-  //     await Notifications.scheduleNotificationAsync({
-  //       content: {
-  //         title,
-  //         body,
-  //       },
-  //       trigger,
-  //     });
-  //   } catch(error) {
-  //     console.error('Error scheduling notification: ', error);
-  //   }
-  // };
-
   const handleSubmitForm = async () => {
-    // const { status } = await Notifications.getPermissionsAsync();
-    // if (status !== 'granted') {
-    //   alert('Permission to receive notifications is required');
-    //   return;
-    // }
-  
-    // console.log('Your Reminder:', reminderData);
-    // console.log('Your Notes:', notesData);
     if(!calendarDate || !reminderData || !notesData) {
       alert("please fill in all the fields");
       return;
@@ -119,23 +79,6 @@ export default function MedicalReminders() {
       notes: notesData,
       time: selectedTime ? selectedTime.toLocaleTimeString() : 'None',
     };
-  
-    // if (selectedTime) {
-    //   const title = 'Reminder';
-    //   const body = `Time to ${reminderData}`;
-    //   const trigger = new Date(moment(selectedTime).format()); 
-  
-    //   scheduleAlarm(title, body, { time: trigger });
-    // }
-
-    // const submittedData = {
-    //   date: calendarDate,
-    //   reminder: reminderData,
-    //   notes: notesData,
-    //   time: selectedTime ? selectedTime.toLocaleTimeString() : 'None',
-    // };
-
-    // setSubmittedData(prevData => [...prevData, newReminder]);
     setSubmittedData((prevData) => {
       const existingDataIndex = prevData.findIndex((item) => item.date === calendarDate);
 
@@ -173,23 +116,25 @@ export default function MedicalReminders() {
             style={styles.calendar}
           />
           <View>
-            <Text className="mt-4 text-black font-extrabold text-lg">Your Reminders:</Text>
             {submittedData && submittedData.length > 0 ? (
-              <View className="mb-40 ml-2">
-                {submittedData.map((dateData, index) => (
-                  <View key={index}>
-                    <Text className="text-black text-md font-semibold mt-4">Reminders for {dateData.date}:</Text>
-                    <View style={styles.submittedDataContainer}>
-                      {dateData.reminders.map((data, reminderIndex) => (
-                        <View key={reminderIndex}>
-                          <Text style={styles.submittedData}>Reminder: {data.reminder}</Text>
-                          <Text style={styles.submittedData}>Notes: {data.notes}</Text>
-                          <Text style={styles.submittedData}>Time: {data.time}</Text>
-                        </View>
-                      ))}
+              <View>
+                <Text className="mt-4 text-black font-extrabold text-lg">Your Reminders:</Text>
+                <View className="mb-40 ml-2">
+                  {submittedData.map((dateData, index) => (
+                    <View key={index}>
+                      <Text className="text-black text-md font-semibold mt-4">Reminders for {dateData.date}:</Text>
+                      <View style={styles.submittedDataContainer}>
+                        {dateData.reminders.map((data, reminderIndex) => (
+                          <View key={reminderIndex}>
+                            <Text style={styles.submittedData}>Reminder: {data.reminder}</Text>
+                            <Text style={styles.submittedData}>Notes: {data.notes}</Text>
+                            <Text style={styles.submittedData}>Time: {data.time}</Text>
+                          </View>
+                        ))}
+                      </View>
                     </View>
-                  </View>
-                ))}
+                  ))}
+                </View>
               </View>
             ) : (
               <View className="mt-10">
@@ -199,6 +144,7 @@ export default function MedicalReminders() {
               </View>
             )}
           </View>
+
         </View>
         <View className="mb-40 ml-6">
         
