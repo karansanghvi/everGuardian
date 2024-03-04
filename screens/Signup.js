@@ -208,6 +208,15 @@ const Signup = ({ navigation }) => {
                 {userType === "elderly" ? "Signup" : "Connect"}
               </Text>
             </TouchableOpacity>
+            {/* <TouchableOpacity
+  className="py-3 bg-black rounded-lg"
+  onPress={handleSignUp}
+>
+  <Text className="text-lg text-white text-center font-extrabold">
+    {userType === "elderly" ? "Signup" : "Connect"}
+  </Text>
+</TouchableOpacity> */}
+
             <View style={styles.separator}>
               <View style={styles.line}></View>
               <Text style={styles.orText}>Or</Text>
