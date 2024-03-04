@@ -7,34 +7,16 @@ import { useNavigation } from '@react-navigation/native'
 import {ArrowLeftIcon} from 'react-native-heroicons/solid'
 import { Dropdown } from 'react-native-element-dropdown'
 import AntDesign from '@expo/vector-icons/AntDesign'
-// import DateTimePicker from '@react-native-community/datetimepicker'
 
 const MedicalRecords = () => {
 
   const [bloodGroup, setBloodGroup] = useState(null);
   const [gender, setGender] = useState(null);
-  // const [date, setDate] = useState(new Date());
-  // const [showDatePicker, setShowDatePicker] = useState(false);
-
   const navigation = useNavigation();
 
-  const handleLogin = () => {
-    navigation.navigate('Login');
-  }
-
-  const handleSignupButton = () => {
+  const handleSubmitButton = () => {
     navigation.navigate('Home');
   }
-
-  // const handleDateChange = (event, selectedDate) => {
-  //   const currentDate = selectedDate || date;
-  //   setShowDatePicker(Platform === 'ios');
-  //   setDate(currentDate);
-  // };
-
-  // const showDatePickerModal = () => {
-  //   setShowDatePicker(true);
-  // };
 
   const bloodGroupData = [
     { label: 'A+', value: '1' },
@@ -111,23 +93,6 @@ const MedicalRecords = () => {
                   <AntDesign style={styles.icon} color="black" name="Safety" size={20} />
                 )}
             />          
-            {/* <Text className="text-black ml-1 text-lg">Enter Birth Date:</Text>
-              <Button
-                title="Select Date"
-                onPress={showDatePickerModal}
-              />
-              {
-                showDatePicker && (
-                  <DateTimePicker
-                    testID='dateTimePicker'
-                    value={date}
-                    mode='date'
-                    is24Hour={true}
-                    display='default'
-                    onChange={handleDateChange}
-                  />
-                )
-              } */}
             <Text className="text-black ml-1 text-lg">Enter Address:</Text>
               <TextInput
                 className="p-4 bg-gray-100 text-black rounded-xl mb-3"
@@ -150,7 +115,7 @@ const MedicalRecords = () => {
               />
               <TouchableOpacity 
                 className="py-3 bg-black rounded-lg mb-4"
-                onPress={handleSignupButton}
+                onPress={handleSubmitButton}
               >
                 <Text className="text-lg text-white text-center font-extrabold">
                   Submit

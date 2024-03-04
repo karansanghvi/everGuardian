@@ -58,8 +58,6 @@ const Signup = ({ navigation }) => {
     try {
       const userCredentials = await auth.createUserWithEmailAndPassword(email, password);
       const user = userCredentials.user;
-  
-      // Add user data to Firestore
       await firestore.collection('users').doc(user.uid).set({
         name: `${firstName} ${lastName}`,
         phone: phoneNumber,
@@ -67,9 +65,7 @@ const Signup = ({ navigation }) => {
         userId: user.uid,
         userType: userType,
       });
-  
-      // Pass user's name as a param to the 'Home' screen using navigation.navigate
-      navigation.navigate('Home', { firstName: firstName }); // Use the same prop name
+      navigation.navigate('Home', { firstName: firstName }); 
     } catch (error) {
       console.error('Error during sign-up:', error);
       alert(error.message);

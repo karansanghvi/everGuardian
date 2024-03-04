@@ -19,14 +19,10 @@ const Login = () => {
   const handleLoginButton = async () => {
     try {
       const userCredentials = await auth.signInWithEmailAndPassword(email, password);
-      // Send a welcome email
       sendWelcomeEmail(email);
-
-      // Navigate to the Home screen after successful login
       navigation.navigate('Home');
     } catch (error) {
       console.error('Login failed:', error);
-      // Handle login error (e.g., show an error message)
     }
   };
 
