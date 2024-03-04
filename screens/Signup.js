@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -7,11 +8,11 @@ import {
   ScrollView,
   StyleSheet,
 } from "react-native";
-import React, { useState, useEffect } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ArrowLeftIcon } from "react-native-heroicons/solid";
-import { auth, firestore } from "../config";
+import { auth, firestore, firebase, serverTimestamp } from "../config";
+import { EyeIcon, EyeOffIcon } from "react-native-heroicons/solid";
 
 const Signup = ({ navigation }) => {
   const [email, setEmail] = useState("");
@@ -20,80 +21,122 @@ const Signup = ({ navigation }) => {
   const [lastName, setLastName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [userType, setUserType] = useState("");
-
-  // Function to handle user sign-up
-  // const handleSignUp = async () => {
-  //   try {
-  //     const userCredentials = await auth.createUserWithEmailAndPassword(
-  //       email,
-  //       password
-  //     );
-  //     const user = userCredentials.user;
-  
-  //     console.log('User created:', user);
-  
-  //     // Add user data to Firestore
-  //     await firestore
-  //       .collection("users")
-  //       .doc(user.uid)
-  //       .set({
-  //         name: `${firstName} ${lastName}`,
-  //         phone: phoneNumber,
-  //         email: user.email,
-  //         userId: user.uid,
-  //         userType: userType,
-  //       });
-  
-  //     console.log('Firestore data set successfully');
-  
-  //     navigation.navigate("Profile");
-  //     navigation.navigate('Home', { userName: `${firstName}` });
-  //   } catch (error) {
-  //     console.error('Error during sign-up:', error);
-  //     alert(error.message);
-  //   }
-  // };
+  const [confirmationCode, setConfirmationCode] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSignUp = async () => {
     try {
-      const userCredentials = await auth.createUserWithEmailAndPassword(email, password);
+      const userCredentials = await auth.createUserWithEmailAndPassword(
+        email,
+        password
+      );
       const user = userCredentials.user;
-  
+
       // Add user data to Firestore
-      await firestore.collection('users').doc(user.uid).set({
-        name: `${firstName} ${lastName}`,
-        phone: phoneNumber,
-        email: user.email,
-        userId: user.uid,
-        userType: userType,
-      });
-  
-      // Pass user's name as a param to the 'Home' screen using navigation.navigate
-      navigation.navigate('Home', { firstName: firstName }); // Use the same prop name
+      await firestore
+        .collection("users")
+        .doc(user.uid)
+        .set({
+          name: `${firstName} ${lastName}`,
+          phone: phoneNumber,
+          email: user.email,
+          userId: user.uid,
+          userType: userType,
+          confirmationCode:
+            userType === "elderly" ? generateConfirmationCode() : null,
+        });
+
+      navigation.navigate("Home", { firstName: firstName });
     } catch (error) {
-      console.error('Error during sign-up:', error);
+      console.error("Error during sign-up:", error);
+      alert(error.message);
+    }
+  };
+
+  const generateConfirmationCode = () => {
+    // Generate a 6-digit random confirmation code
+    return Math.floor(100000 + Math.random() * 900000).toString();
+  };
+
+  const handleConnect = async () => {
+    try {
+      const userSnapshot = await firestore
+        .collection("users")
+        .where("confirmationCode", "==", confirmationCode)
+        .get();
+  
+      if (!userSnapshot.empty) {
+        const userDoc = userSnapshot.docs[0];
+        const elderlyUserId = userDoc.data().userId;
+  
+        let guardianUserId;
+  
+        if (userType === "elderly") {
+          // If the user is elderly, get the guardian user id from your database or other source
+          guardianUserId = "your_guardian_user_id";
+        } else {
+          // If the user is a guardian, perform the signup part
+          const userCredentials = await auth.createUserWithEmailAndPassword(
+            email,
+            password
+          );
+          const user = userCredentials.user;
+  
+          // Add user data to Firestore
+          await firestore
+            .collection("users")
+            .doc(user.uid)
+            .set({
+              name: `${firstName} ${lastName}`,
+              phone: phoneNumber,
+              email: user.email,
+              userId: user.uid,
+              userType: userType,
+              confirmationCode: null, // Assuming guardians don't have confirmation codes
+            });
+  
+          guardianUserId = user.uid;
+        }
+  
+        // Import serverTimestamp from the correct location
+        const { serverTimestamp } = firebase.firestore.FieldValue;
+  
+        // Create a new document in the "connections" collection
+        await firestore.collection("connections").add({
+          guardianUserId,
+          elderlyUserId,
+          timestamp: serverTimestamp(), // Use serverTimestamp here
+        });
+  
+        navigation.navigate('Home');
+        console.log("Connected to user with userId:", elderlyUserId);
+      } else {
+        alert("Invalid confirmation code");
+      }
+    } catch (error) {
+      console.error("Error during connection:", error);
       alert(error.message);
     }
   };
   
   
-  // Function to handle user sign-out
-  // const handleSignOut = () => {
-  //   auth
-  //     .signOut()
-  //     .then(() => {
-  //       navigation.replace("Login"); // Navigate to the "Login" screen after sign-out
-  //     })
-  //     .catch((error) => alert(error.message));
-  // };
+  const formatPhoneNumber = (inputNumber) => {
+    // Remove all non-numeric characters from the input
+    const numericOnly = inputNumber.replace(/[^0-9]/g, "");
 
-
-  // const handleSignupButton = () => {
-  //   navigation.navigate('Home');
-  // }
-
+    // Update the state with the numeric phone number
+    setPhoneNumber(numericOnly);
+  };
   return (
-    <LinearGradient style={{ flex: 1, backgroundColor: "#007260" }} colors={["#007260", "#39B68D"]}>
+    <ScrollView
+    contentContainerStyle={{ flexGrow: 1 }}
+    keyboardShouldPersistTaps= "handled"
+  >
+
+    <LinearGradient
+      style={{ flex: 1, backgroundColor: "#007260" }}
+      colors={["#007260", "#39B68D"]}
+    >
       <SafeAreaView className="flex">
         <View className="flex-row justify-start">
           <TouchableOpacity
@@ -116,26 +159,26 @@ const Signup = ({ navigation }) => {
             <TextInput
               className="p-4 bg-gray-100 text-black rounded-xl mb-3"
               placeholder="First Name"
-              onChangeText={
-                (text) => {
-                  const alphabetsOnlyForFirstName = text.replace(/[^A-Za-z]/g, '');
-                  setFirstName(alphabetsOnlyForFirstName);
-                }
-              }
+              onChangeText={(text) => {
+                const alphabetsOnlyForFirstName = text.replace(
+                  /[^A-Za-z]/g,
+                  ""
+                );
+                setFirstName(alphabetsOnlyForFirstName);
+              }}
               autoCapitalize="none"
               value={firstName}
               autoCorrect={false}
             />
+
             <Text className="text-black ml-1 text-lg">Enter Last Name:</Text>
             <TextInput
               className="p-4 bg-gray-100 text-black rounded-xl mb-3"
               placeholder="Last Name"
-              onChangeText={
-                (text) => {
-                  const alphabetsOnlyForLastName = text.replace(/[^A-Za-z]/g, '');
-                  setLastName(alphabetsOnlyForLastName)
-                }
-              }
+              onChangeText={(text) => {
+                const alphabetsOnlyForLastName = text.replace(/[^A-Za-z]/g, "");
+                setLastName(alphabetsOnlyForLastName);
+              }}
               autoCapitalize="none"
               autoCorrect={false}
               value={lastName}
@@ -146,13 +189,9 @@ const Signup = ({ navigation }) => {
               placeholder="Phone Number"
               keyboardType="numeric"
               value={phoneNumber}
-              onChangeText={
-                (number) => {
-                  const numericOnlyForPhoneNumber = number.replace(/[^0-9]/g, '');
-                  setPhoneNumber(`+91${numericOnlyForPhoneNumber}`);
-                }
-              }
+              onChangeText={(number) => formatPhoneNumber(number)}
             />
+
             <Text className="text-black ml-1 text-lg">
               Enter Email Address:
             </Text>
@@ -164,11 +203,7 @@ const Signup = ({ navigation }) => {
               value={email}
               keyboardType="email-address"
               onChangeText={(text) => {
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if(emailRegex.test(text) || text === '') 
-                {
-                  setEmail(text);
-                }
+                setEmail(text);
               }}
             />
             <Text className="text-black ml-1 text-lg">Enter Password:</Text>
@@ -181,42 +216,66 @@ const Signup = ({ navigation }) => {
               value={password}
               autoCorrect={false}
             />
+
             <Text className="text-black ml-1 text-lg">Select User Type:</Text>
             <View style={styles.radioContainer}>
-              <TouchableOpacity
-                onPress={() => setUserType("elderly")}
-              >
-                <View style={[
-                  styles.radioButton,
-                  userType === "elderly" && styles.selectedRadioButton,
-                ]}>
+              <TouchableOpacity onPress={() => setUserType("elderly")}>
+                <View
+                  style={[
+                    styles.radioButton,
+                    userType === "elderly" && styles.selectedRadioButton,
+                  ]}
+                >
                   <Text style={styles.radioText}>Elderly</Text>
                 </View>
               </TouchableOpacity>
 
-              <TouchableOpacity
-                onPress={() => setUserType("guardian")}
-              >
-                <View style={[
-                  styles.radioButton,
-                  userType === "guardian" && styles.selectedRadioButton,
-                ]}>
+              <TouchableOpacity onPress={() => setUserType("guardian")}>
+                <View
+                  style={[
+                    styles.radioButton,
+                    userType === "guardian" && styles.selectedRadioButton,
+                  ]}
+                >
                   <Text style={styles.radioText}>Guardian</Text>
                 </View>
               </TouchableOpacity>
             </View>
-            <TouchableOpacity className="flex items-end">
-              <Text className="text-black mb-2">Forgot Password?</Text>
-            </TouchableOpacity>
+            {userType === "elderly" && (
+              <View>
+                <Text className="text-black ml-1 text-lg">
+                  Confirmation Code:
+                </Text>
+                <TextInput
+                  style={{ ...styles.input, fontWeight: "bold" }} // Apply bold style to placeholder text
+                  className="p-4 bg-gray-100 text-black rounded-xl mb-3"
+                  placeholder={generateConfirmationCode()} // Set placeholder to a random 6-digit number
+                  value={confirmationCode}
+                  onChangeText={(code) => setConfirmationCode(code)}
+                  editable={false} // Elderly's code is not editable
+                />
+              </View>
+            )}
+
+            {userType === "guardian" && (
+              <View>
+                <Text className="text-black ml-1 text-lg">
+                  Enter Confirmation Code:
+                </Text>
+                <TextInput
+                  className="p-4 bg-gray-100 text-black rounded-xl mb-3"
+                  placeholder="Enter Code"
+                  value={confirmationCode}
+                  onChangeText={(code) => setConfirmationCode(code)}
+                />
+              </View>
+            )}
             <TouchableOpacity
               className="py-3 bg-black rounded-lg"
-              // onPress={registerUser}
-              onPress={() =>
-                handleSignUp()
-              }
+              onPress={userType === "elderly" ? handleSignUp : handleConnect}
             >
               <Text className="text-lg text-white text-center font-extrabold">
-                Signup
+                {userType === "elderly" ? "Signup" : "Connect"}
               </Text>
             </TouchableOpacity>
             <View style={styles.separator}>
@@ -247,6 +306,8 @@ const Signup = ({ navigation }) => {
         </View>
       </ScrollView>
     </LinearGradient>
+    </ScrollView>
+
   );
 };
 
@@ -269,19 +330,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   radioContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   radioButton: {
     borderWidth: 1,
-    borderColor: 'black',
+    borderColor: "black",
     padding: 10,
   },
   selectedRadioButton: {
-    backgroundColor: 'black',
-    color: 'white'
+    backgroundColor: "black",
+    color: "white",
   },
   radioText: {
-    color: 'black',
+    color: "black",
   },
 });
