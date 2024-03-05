@@ -11,8 +11,6 @@ const firebaseConfig = {
   messagingSenderId: "704548573956",
   appId: "1:704548573956:web:5a46d754fcc5c87466f651"
 };
-
-// Initialize Firebase
 let app;
 if (!firebase.apps.length) {
     app = firebase.initializeApp(firebaseConfig);
@@ -21,10 +19,12 @@ if (!firebase.apps.length) {
 }
 
 const auth = firebase.auth();
-const firestore = firebase.firestore(); // Include Firestore initialization
+const firestore = firebase.firestore();
+const { serverTimestamp } = firebase.firestore; // Destructure serverTimestamp directly
 
 export {
     firebase,
     auth,
     firestore,
+    serverTimestamp,
 };
