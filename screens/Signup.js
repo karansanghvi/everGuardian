@@ -11,7 +11,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ArrowLeftIcon } from "react-native-heroicons/solid";
-import { auth, firestore, firebase, serverTimestamp } from "../config";
+import { auth, firestore, firebase } from "../config"; // Assuming you have correctly configured your Firebase
 import { EyeIcon, EyeOffIcon } from "react-native-heroicons/solid";
 
 const Signup = ({ navigation }) => {
@@ -31,32 +31,100 @@ const Signup = ({ navigation }) => {
         password
       );
       const user = userCredentials.user;
-  
+
       // Add user data to Firestore
-      await firestore.collection('users').doc(user.uid).set({
-        name: `${firstName} ${lastName}`,
-        phone: phoneNumber,
-        email: user.email,
-        userId: user.uid,
-        userType: userType,
-      });
-  
-      // Pass user's name as a param to the 'Home' screen using navigation.navigate
-      navigation.navigate('Home', { firstName: firstName }); // Use the same prop name
+      await firestore
+        .collection("users")
+        .doc(user.uid)
+        .set({
+          name: `${firstName} ${lastName}`,
+          phone: phoneNumber,
+          email: user.email,
+          userId: user.uid,
+          userType: userType,
+          confirmationCode:
+            userType === "elderly" ? generateConfirmationCode() : null,
+        });
+
+      navigation.navigate("Home", { firstName: firstName });
+    } catch (error) {
+      console.error("Error during sign-up:", error);
+      alert(error.message);
+    }
+  };
+
+  const generateConfirmationCode = () => {
+    // Generate a 6-digit random confirmation code
+    return Math.floor(100000 + Math.random() * 900000).toString();
+  };
+
+  const handleConnect = async () => {
+    try {
+      const userSnapshot = await firestore
+        .collection("users")
+        .where("confirmationCode", "==", confirmationCode)
+        .get();
+
+      if (!userSnapshot.empty) {
+        const userDoc = userSnapshot.docs[0];
+        const elderlyUserId = userDoc.data().userId;
+
+        let guardianUserId;
+
+        if (userType === "elderly") {
+          // If the user is elderly, get the guardian user id from your database or other source
+          guardianUserId = "your_guardian_user_id";
+        } else {
+          // If the user is a guardian, perform the signup part
+          const userCredentials = await auth.createUserWithEmailAndPassword(
+            email,
+            password
+          );
+          const user = userCredentials.user;
+
+          // Add user data to Firestore
+          await firestore
+            .collection("users")
+            .doc(user.uid)
+            .set({
+              name: `${firstName} ${lastName}`,
+              phone: phoneNumber,
+              email: user.email,
+              userId: user.uid,
+              userType: userType,
+              confirmationCode: null, // Assuming guardians don't have confirmation codes
+            });
+
+          guardianUserId = user.uid;
+        }
+
+        // Import serverTimestamp from the correct location
+        const { serverTimestamp } = firebase.firestore.FieldValue;
+
+        // Create a new document in the "connections" collection
+        await firestore.collection("connections").add({
+          guardianUserId,
+          elderlyUserId,
+          timestamp: serverTimestamp(), // Use serverTimestamp here
+        });
+
+        navigation.navigate('Home');
+        console.log("Connected to user with userId:", elderlyUserId);
+      } else {
+        alert("Invalid confirmation code");
+      }
     } catch (error) {
       console.error("Error during connection:", error);
       alert(error.message);
     }
   };
-  
-  
+
   const formatPhoneNumber = (inputNumber) => {
     // Remove all non-numeric characters from the input
     const numericOnly = inputNumber.replace(/[^0-9]/g, "");
-
-    // Update the state with the numeric phone number
     setPhoneNumber(numericOnly);
   };
+
   return (
     <ScrollView
     contentContainerStyle={{ flexGrow: 1 }}
@@ -250,7 +318,6 @@ const Signup = ({ navigation }) => {
   );
 };
 
-export default Signup;
 
 const styles = StyleSheet.create({
   separator: {
@@ -285,3 +352,5 @@ const styles = StyleSheet.create({
     color: "black",
   },
 });
+
+export default Signup;

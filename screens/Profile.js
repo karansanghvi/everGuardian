@@ -69,7 +69,7 @@ const Profile = ({ navigation }) => {
       <SafeAreaView className="flex">
         <View className="flex-row justify-start">
           <TouchableOpacity
-            onPress={() => navigation.goBack()}
+            onPress={() => navigation.navigate("Home")}
             className="bg-black p-2 rounded-tr-2xl rounded-bl-2xl ml-4 mt-4"
           >
             <ArrowLeftIcon size="20" color="white" />
