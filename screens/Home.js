@@ -2,7 +2,6 @@ import React from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { View, Text, Image, StyleSheet, TouchableOpacity, TextBase } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 const Home = ({ route }) => {
   const navigation = useNavigation();
@@ -14,19 +13,19 @@ const Home = ({ route }) => {
 
   const handleMedicalRecordsButton = () => {
     navigation.navigate('MedicalRecords');
-  }
+  };
 
   const handleMedicalRemindersButton = () => {
     navigation.navigate('MedicalReminders');
-  }
+  };
 
   const handleLocationTrackingButton = () => {
     navigation.navigate('LocationTracking');
-  }
+  };
 
-  const handleActivityTrackingButton = () => {
-    navigation.navigate('ActivityTracking');
-  }
+  const handleSOSButton = () => {
+    navigation.navigate('SOS');
+  };
 
 
   return (
@@ -101,7 +100,7 @@ const Home = ({ route }) => {
                   shadowOpacity: 0.2,
                   shadowRadius: 2,
                 }}
-                onPress={handleMedicalRecordsButton}
+                onPress={handleMedicalRemindersButton}
               >
                 <Image
                   source={require('../assets/images/medical_reminders.png')}
@@ -126,7 +125,7 @@ const Home = ({ route }) => {
                   shadowOpacity: 0.2,
                   shadowRadius: 2,
                 }}
-                onPress={handleMedicalRecordsButton}
+                onPress={handleLocationTrackingButton}
               >
                 <Image
                   source={require('../assets/images/location.png')}
@@ -151,7 +150,7 @@ const Home = ({ route }) => {
                   shadowOpacity: 0.2,
                   shadowRadius: 2,
                 }}
-                onPress={handleMedicalRecordsButton}
+                onPress={handleSOSButton}
               >
                 <Image
                   source={require('../assets/images/sos.png')}

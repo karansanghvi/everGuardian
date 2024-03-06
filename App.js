@@ -7,7 +7,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import ForgotPassword from "./screens/ForgotPassword";
 import MedicalReminders from "./screens/MedicalReminders";
 import LocationTracking from "./screens/LocationTracking";
-import ActivityTracking from "./screens/ActivityTracking";
+import Sos from "./screens/Sos";
 
 const Stack = createNativeStackNavigator();
 
@@ -99,8 +99,8 @@ function App() {
           }}
         />
         <Stack.Screen
-          name="ActivityTracking"
-          component={ActivityTracking}
+          name="SOS"
+          component={Sos}
           options={{
             headerShown: false
           }}

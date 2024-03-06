@@ -20,7 +20,7 @@ if (!firebase.apps.length) {
 
 const auth = firebase.auth();
 const firestore = firebase.firestore();
-const { serverTimestamp } = firebase.firestore; // Destructure serverTimestamp directly
+const { serverTimestamp } = firebase.firestore; 
 
 export {
     firebase,

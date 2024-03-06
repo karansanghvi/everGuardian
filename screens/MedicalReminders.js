@@ -7,13 +7,13 @@ import {
   TouchableOpacity,
   Modal,
   TextInput,
-  Platform,
 } from 'react-native';
 import { ArrowLeftIcon } from "react-native-heroicons/solid";
 import { useNavigation } from '@react-navigation/native';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import Plus from '../components/Plus';
+import { db } from '../config'; 
 
 LocaleConfig.locales['en'] = {
   monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
@@ -34,6 +34,18 @@ export default function MedicalReminders() {
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
   const [selectedTime, setSelectedTime] = useState(null);
   const [submittedData, setSubmittedData] = useState([]);
+
+  useEffect(() => {
+    const unsubscribe = db.collection('reminders').onSnapshot((querySnapshot) => {
+      const data = [];
+      querySnapshot.forEach((doc) => {
+        data.push(doc.data());
+      });
+      setSubmittedData(data);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const onDayPress = (day) => {
     setSelectedDate(day.dateString);
@@ -68,8 +80,8 @@ export default function MedicalReminders() {
   };
 
   const handleSubmitForm = async () => {
-    if(!calendarDate || !reminderData || !notesData) {
-      alert("please fill in all the fields");
+    if (!calendarDate || !reminderData || !notesData) {
+      alert("Please fill in all the fields");
       return;
     }
 
@@ -79,22 +91,11 @@ export default function MedicalReminders() {
       notes: notesData,
       time: selectedTime ? selectedTime.toLocaleTimeString() : 'None',
     };
-    setSubmittedData((prevData) => {
-      const existingDataIndex = prevData.findIndex((item) => item.date === calendarDate);
 
-      if (existingDataIndex !== -1) {
-        const newData = [...prevData];
-        newData[existingDataIndex].reminders.push(newReminder);
-
-        return newData;
-      } else {
-        return [...prevData, { date: calendarDate, reminders: [newReminder] }];
-      }
-    });
+    await db.collection('reminders').add(newReminder);
 
     setShowPopup(false);
   };
-
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>

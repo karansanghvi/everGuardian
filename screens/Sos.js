@@ -1,12 +1,12 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 
-const ActivityTracking = () => {
+const Sos = () => {
   return (
     <View>
-      <Text>activity tracking</Text>
+      <Text>sos system</Text>
     </View>
   );
 }
 
-export default ActivityTracking;
+export default Sos;
