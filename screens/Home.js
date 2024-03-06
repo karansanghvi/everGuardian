@@ -1,7 +1,8 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { View, Text, Image, StyleSheet, TouchableOpacity, TextBase } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 const Home = ({ route }) => {
   const navigation = useNavigation();
@@ -58,7 +59,7 @@ const Home = ({ route }) => {
             />
           </View>
           <View className="ml-1 mt-4 mr-1">
-            <Text className="text-black font-semibold text-lg">Our Services</Text>
+            <Text className="text-black font-semibold text-lg pl-2">Our Services</Text>
             <View style={styles.servicesImages}>
               <TouchableOpacity
                 style={{
