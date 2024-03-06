@@ -159,11 +159,14 @@ const Home = ({ route }) => {
                
               </TouchableOpacity>
             </View>
-            <View style={styles.servicesTitles}>
-              <Text style={{ color: 'black', marginTop: 12 }} className="text-center font-semibold text-sm ml-2">Medical</Text>
-              <Text style={{ color: 'black', marginTop: 12 }} className="text-center font-bold text-sm">Medical</Text>
-              <Text style={{ color: 'black', marginTop: 12 }} className="text-center font-bold text-sm">Medical</Text>
-              <Text style={{ color: 'black', marginTop: 12 }} className="text-center font-bold text-sm">Medical</Text>
+            <View style={styles.servicesImages}>
+              <Text style={styles.servicesCaption} className="pl-2">Medical Records</Text>
+              <Text style={styles.servicesCaption} className="pl-2">Medical Reminder</Text>
+              <Text style={styles.servicesCaption} className="pl-1">Location Tracking</Text>
+              <Text style={styles.servicesCaption} className="pl-3">SOS System</Text>
+            </View>
+            <View>
+              <Text className="pl-2 mt-4 text-black font-semibold text-lg">Your Reminders</Text>
             </View>
           </View>
         </View>
@@ -255,10 +258,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginRight: '8px'
   },
-  servicesTitles: {
-    marginLeft: '8px',
-    flexDirection: 'row',
-    marginRight: '8px',
-    gap: 43,
-  }
+  servicesCaption: {
+    color: 'black',
+    fontSize: 10,
+  },
 });
