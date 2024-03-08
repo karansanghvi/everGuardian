@@ -7,15 +7,13 @@ import {
   TouchableOpacity,
   Modal,
   TextInput,
+  Platform,
 } from 'react-native';
 import { ArrowLeftIcon } from "react-native-heroicons/solid";
 import { useNavigation } from '@react-navigation/native';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import Plus from '../components/Plus';
-import * as Notifications from 'expo-notifications';
-import { Audio } from 'expo-av';
-// import { db } from '../config'; 
 
 LocaleConfig.locales['en'] = {
   monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
@@ -36,85 +34,6 @@ export default function MedicalReminders() {
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
   const [selectedTime, setSelectedTime] = useState(null);
   const [submittedData, setSubmittedData] = useState([]);
-  const [alarmSound, setAlarmSound] = useState(null);
-
-  // useEffect(() => {
-  //   const unsubscribe = db.collection('reminders').onSnapshot((querySnapshot) => {
-  //     const data = [];
-  //     querySnapshot.forEach((doc) => {
-  //       data.push(doc.data());
-  //     });
-  //     setSubmittedData(data);
-  //   });
-
-  //   return () => unsubscribe();
-  // }, []);
-
-  useEffect(() => {
-    const requestPermission = async () => {
-      const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
-      if(status !== 'granted') 
-      {
-        alert("please grant notification permissions to set alarms")
-      }
-    };
-
-    requestPermission();
-  }, []);
-
-  const scheduleAlarm = async (time) => {
-    try {
-      const dateTime = new Date(selectedDate);
-      dateTime.setHours(time.getHours());
-      dateTime.setMinutes(time.getMinutes());
-
-      const schedulingOptions = {
-        content: {
-          title: 'Medical Reminder!',
-          body: 'Time for your medical reminder',
-        },
-        trigger: {
-          date: dateTime.getTime(),
-        },
-      };
-
-      await Notifications.systemNotificationAsync(schedulingOptions);
-    }
-    catch (error) {
-      console.error('Error scheduling alarm:', error);
-    }
-  };
-
-  const playAlarmSound = async() => {
-    try {
-      const { sound } = await Audio.Sound.createAsync(
-        require('../assets/audio/alarm.mp3')
-      );
-      await sound.playAsync();
-      setAlarmSound(sound);
-    }
-    catch (error) {
-      console.log('Error playing alarm sound', error);
-    }
-  };
-
-  const dismissAlarm = async () => {
-    try {
-      if (alarmSound) {
-        await alarmSound.stopAsync();
-        await alarmSound.unloadAsync();
-        setAlarmSound(null);
-      }
-    } catch(error) {
-      console.error('Error dismissing the alarm sound:', error);
-    }
-  };
-
-  const handleConfirm = (time) => {
-    setSelectedTime(time);
-    hideDatePicker();
-    scheduleAlarm(time);
-  };
 
   const onDayPress = (day) => {
     setSelectedDate(day.dateString);
@@ -142,30 +61,36 @@ export default function MedicalReminders() {
     setDatePickerVisible(false);
   };
 
+  const handleConfirm = (time) => {
+    setSelectedTime(time);
+    hideDatePicker();
+    console.log(time);
+  };
+
   const handleSubmitForm = async () => {
-    if (!calendarDate || !reminderData || !notesData) {
-      alert("Please fill in all the fields");
+    if(!calendarDate || !reminderData || !notesData) {
+      alert("please fill in all the fields");
       return;
     }
 
     const newReminder = {
       date: calendarDate,
-      reminders: [
-        {
-          reminder: reminderData,
-          notes: notesData,
-          time: selectedTime ? selectedTime.toLocaleTimeString() : 'None',
-        },
-      ],
+      reminder: reminderData,
+      notes: notesData,
+      time: selectedTime ? selectedTime.toLocaleTimeString() : 'None',
     };
+    setSubmittedData((prevData) => {
+      const existingDataIndex = prevData.findIndex((item) => item.date === calendarDate);
 
-    setSubmittedData((prevData) => [...prevData, newReminder]);
+      if (existingDataIndex !== -1) {
+        const newData = [...prevData];
+        newData[existingDataIndex].reminders.push(newReminder);
 
-    // Schedule the alarm
-    if (selectedTime) {
-      scheduleAlarm(selectedTime);
-      playAlarmSound();
-    }
+        return newData;
+      } else {
+        return [...prevData, { date: calendarDate, reminders: [newReminder] }];
+      }
+    });
 
     setShowPopup(false);
   };
@@ -191,35 +116,35 @@ export default function MedicalReminders() {
             style={styles.calendar}
           />
           <View>
-          {submittedData && submittedData.length > 0 ? (
-            <View>
-              <Text className="mt-4 text-black font-extrabold text-lg">Your Reminders:</Text>
-              <View className="mb-40 ml-2">
-                {submittedData.map((dateData, index) => (
-                  <View key={index}>
-                    <Text className="text-black text-md font-semibold mt-4">Reminders for {dateData.date}:</Text>
-                    <View style={styles.submittedDataContainer}>
-                      {dateData.reminders.map((data, reminderIndex) => (
-                        <View key={reminderIndex}>
-                          <Text style={styles.submittedData}>Reminder: {data.reminder}</Text>
-                          <Text style={styles.submittedData}>Notes: {data.notes}</Text>
-                          <Text style={styles.submittedData}>Time: {data.time}</Text>
-                        </View>
-                      ))}
+            {submittedData && submittedData.length > 0 ? (
+              <View>
+                <Text className="mt-4 text-black font-extrabold text-lg">Your Reminders:</Text>
+                <View className="mb-40 ml-2">
+                  {submittedData.map((dateData, index) => (
+                    <View key={index}>
+                      <Text className="text-black text-md font-semibold mt-4">Reminders for {dateData.date}:</Text>
+                      <View style={styles.submittedDataContainer}>
+                        {dateData.reminders.map((data, reminderIndex) => (
+                          <View key={reminderIndex}>
+                            <Text style={styles.submittedData}>Reminder: {data.reminder}</Text>
+                            <Text style={styles.submittedData}>Notes: {data.notes}</Text>
+                            <Text style={styles.submittedData}>Time: {data.time}</Text>
+                          </View>
+                        ))}
+                      </View>
                     </View>
-                  </View>
-                ))}
+                  ))}
+                </View>
               </View>
-            </View>
-          ) : (
-            <View className="mt-10">
-              <Text className="text-black text-lg font-extrabold text-center">
-                {selectedDate ? 'No reminders' : 'Select a date to view reminders'}
-              </Text>
-            </View>
-          )}
-        </View>
-      </View>
+            ) : (
+              <View className="mt-10">
+                <Text className="text-black text-lg font-extrabold text-center">
+                  {selectedDate ? 'No reminders' : 'Select a date to view reminders'}
+                </Text>
+              </View>
+            )}
+          </View>
+
         </View>
         <View className="mb-40 ml-6">
         
@@ -281,18 +206,16 @@ export default function MedicalReminders() {
                   <Text style={styles.submitButtonText}>Submit</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-            style={styles.cancelButton}
-            onPress={() => {
-              dismissAlarm(); // Dismiss the alarm if the user cancels
-              setShowPopup(false);
-            }}
-          >
-            <Text style={styles.cancelButtonText}>Cancel</Text>
-          </TouchableOpacity>
+                  style={styles.cancelButton}
+                  onPress={() => setShowPopup(false)}
+                >
+                  <Text style={styles.cancelButtonText}>Cancel</Text>
+                </TouchableOpacity>
               </View>
             </View>
           </View>
         </Modal>
+      </View>
     </SafeAreaView>
   );
 }
