@@ -8,12 +8,15 @@ import {
   Modal,
   TextInput,
   Platform,
+  Button,
 } from 'react-native';
 import { ArrowLeftIcon } from "react-native-heroicons/solid";
 import { useNavigation } from '@react-navigation/native';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import Plus from '../components/Plus';
+import * as Notifications from 'expo-notifications';
+import { Audio } from 'expo-av';
 
 LocaleConfig.locales['en'] = {
   monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
@@ -34,6 +37,43 @@ export default function MedicalReminders() {
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
   const [selectedTime, setSelectedTime] = useState(null);
   const [submittedData, setSubmittedData] = useState([]);
+  const [alarmSound, setAlarmSound] = useState(null);
+
+  useEffect(() => {
+    const requestPermission = async() => {
+      const { status } = await Notifications.getPermissionsAsync();
+      if (status !== 'granted') {
+        await Notifications.requestPermissionsAsync();
+      }
+    };
+
+    requestPermission();
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      checkTime();
+    }, 1000);
+  
+    return () => clearInterval(interval);
+  }, [selectedTime]);
+  
+  const checkTime = () => {
+    if (selectedTime) {
+      const currentDateTime = new Date();
+      console.log(
+        selectedTime.getHours() + " : " + selectedTime.getMinutes() + " = " + currentDateTime.getHours() + " : " + currentDateTime.getMinutes()
+      );
+      if (
+        selectedTime.getHours() === currentDateTime.getHours() &&
+        selectedTime.getMinutes() === currentDateTime.getMinutes()
+      ) {
+        playAlarmSound();
+        setSelectedTime(null);
+      }
+    }
+  };
+  
 
   const onDayPress = (day) => {
     setSelectedDate(day.dateString);
@@ -63,8 +103,55 @@ export default function MedicalReminders() {
 
   const handleConfirm = (time) => {
     setSelectedTime(time);
+    scheduleAlarm(time);
     hideDatePicker();
     console.log(time);
+  };
+
+  const scheduleAlarm = async (time) => {
+    try {
+      const dateTime = new Date();
+      dateTime.setHours(time.getHours());
+      dateTime.setMinutes(time.getMinutes());
+
+      const schedulingOptions = {
+        content: {
+          title: 'Alarm',
+          body: 'Time to wake up',
+        },
+        trigger: {
+          date: dateTime.getTime(),
+        },
+      };
+
+      await Notifications.scheduleNotificationAsync(schedulingOptions);
+    } catch(error) {
+      console.error('Error scheduling alarm:', error);
+    }
+  };
+
+  const playAlarmSound = async () => {
+    try {
+      const { sound } = await Audio.Sound.createAsync(
+        require('../assets/audio/alarm.mp3')
+      );
+      await sound.playAsync();
+      setAlarmSound(sound);
+    } catch(error) {
+      console.error('Error playing alarm sound:', error);
+    }
+  };
+
+  const dismissAlarm = async () => {
+    try {
+      if(alarmSound) {
+        await alarmSound.stopAsync();
+        await alarmSound.unloadAsync();
+        setAlarmSound(null);
+      }
+    } catch(error) {
+      console.error('Error dismissing alarm sound:', error);
+    }
   };
 
   const handleSubmitForm = async () => {
@@ -129,6 +216,7 @@ export default function MedicalReminders() {
                             <Text style={styles.submittedData}>Reminder: {data.reminder}</Text>
                             <Text style={styles.submittedData}>Notes: {data.notes}</Text>
                             <Text style={styles.submittedData}>Time: {data.time}</Text>
+                            <Button title="Dismiss Alarm" onPress={dismissAlarm} disabled={!alarmSound} />
                           </View>
                         ))}
                       </View>
