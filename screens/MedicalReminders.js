@@ -17,6 +17,7 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import Plus from '../components/Plus';
 import * as Notifications from 'expo-notifications';
 import { Audio } from 'expo-av';
+import { firestore, firebase } from "../config"; 
 
 LocaleConfig.locales['en'] = {
   monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
@@ -130,6 +131,7 @@ export default function MedicalReminders() {
     }
   };
 
+
   const playAlarmSound = async () => {
     try {
       const { sound } = await Audio.Sound.createAsync(
@@ -137,10 +139,34 @@ export default function MedicalReminders() {
       );
       await sound.playAsync();
       setAlarmSound(sound);
-    } catch(error) {
+      
+      const notificationId = await scheduleNotification();
+      console.log('Notification scheduled with id:', notificationId);
+    } catch (error) {
       console.error('Error playing alarm sound:', error);
     }
   };
+
+  const scheduleNotification = async () => {
+    try {
+      const notificationContent = {
+        title: 'Alarm',
+        body: 'Time to wake up',
+      };
+  
+      const schedulingOptions = {
+        content: notificationContent,
+        trigger: null, 
+      };
+  
+      const notificationId = await Notifications.scheduleNotificationAsync(schedulingOptions);
+      return notificationId;
+    } catch (error) {
+      console.error('Error scheduling notification:', error);
+    }
+  };
+  
+  
 
   const dismissAlarm = async () => {
     try {
@@ -160,26 +186,36 @@ export default function MedicalReminders() {
       return;
     }
 
-    const newReminder = {
-      date: calendarDate,
-      reminder: reminderData,
-      notes: notesData,
-      time: selectedTime ? selectedTime.toLocaleTimeString() : 'None',
-    };
-    setSubmittedData((prevData) => {
-      const existingDataIndex = prevData.findIndex((item) => item.date === calendarDate);
+    try {
+      const remindersCollection = firestore.collection("reminders");
 
-      if (existingDataIndex !== -1) {
-        const newData = [...prevData];
-        newData[existingDataIndex].reminders.push(newReminder);
+      const newReminder = {
+        date: calendarDate,
+        reminder: reminderData,
+        notes: notesData,
+        time: selectedTime.toLocaleTimeString(),
+      };
 
-        return newData;
-      } else {
-        return [...prevData, { date: calendarDate, reminders: [newReminder] }];
-      }
-    });
+      await remindersCollection.add(newReminder);
 
-    setShowPopup(false);
+      setSubmittedData((prevData) => {
+        const existingDataIndex = prevData.findIndex((item) => item.date === calendarDate);
+  
+        if (existingDataIndex !== -1) {
+          const newData = [...prevData];
+          newData[existingDataIndex].reminders.push(newReminder);
+  
+          return newData;
+        } else {
+          return [...prevData, { date: calendarDate, reminders: [newReminder] }];
+        }
+      });
+  
+      setShowPopup(false);
+      console.log("Reminder added successfully!!")
+    } catch (error) {
+      console.error("Error adding reminder: ", error);
+    }
   };
 
   return (
@@ -198,7 +234,7 @@ export default function MedicalReminders() {
           <Calendar
             onDayPress={onDayPress}
             markedDates={{
-              [selectedDate]: { selected: true, selectedColor: '#39B68D' },
+              [selectedDate]: { selected: true, selectedColor: 'black' },
             }}
             style={styles.calendar}
           />
@@ -339,6 +375,7 @@ const styles = StyleSheet.create({
   },
   calendar: {
     borderRadius: 16,
+    // backgroundColor: '#39B68D',
   },
   plusContainer: {
     position: 'absolute',
