@@ -1,6 +1,6 @@
 import React from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
-import { View, Text, Image, StyleSheet, TouchableOpacity, TextBase } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, TextBase, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 const Home = ({ route }) => {
@@ -47,43 +47,21 @@ const Home = ({ route }) => {
             style={styles.heroImage}
           />
         </View>
-        <View style={styles.container}>
-          <View style={styles.welcomeContainer}>
-            <Text className="font-bold text-3xl ml-2 mt-4">EverGuardian</Text>
-            <Text className="text-md ml-2 text-white font-medium">Your Trusted Support For Every</Text>
-            <Text className="text-md ml-2 text-white font-medium">Journey In Life!</Text>
-            <Image
-              source={require('../assets/images/9440461-removebg-preview.png')}
-              style={styles.welcomeImage}
-            />
-          </View>
-          <View className="ml-1 mt-4 mr-1">
-            <Text className="text-black font-semibold text-lg pl-2">Our Services</Text>
-            <View style={styles.servicesImages}>
-              <TouchableOpacity
-                style={{
-                  flex: 1,
-                  marginLeft: 6,
-                  marginRight: 6,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: '#e9e7e7',
-                  padding: 20, 
-                  borderRadius: 10, 
-                  marginBottom: 3,
-                  shadowColor: 'black', 
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.2,
-                  shadowRadius: 2,
-                }}
-                onPress={handleMedicalRecordsButton}
-              >
+        <ScrollView style={{ flex: 1 }}>
+          <View style={styles.container}>
+            <View style={styles.welcomeContainer}>
+              <Text className="font-bold text-3xl ml-2 mt-4">EverGuardian</Text>
+              <Text className="text-md ml-2 text-white font-medium">Your Trusted Support For Every</Text>
+              <Text className="text-md ml-2 text-white font-medium">Journey In Life!</Text>
               <Image
-                source={require('../assets/images/medical_records.png')}
-                style={styles.optionsImage}
+                source={require('../assets/images/9440461-removebg-preview.png')}
+                style={styles.welcomeImage}
               />
-              </TouchableOpacity>
-
+            </View>
+            <View className="ml-1 mt-4 mr-1">
+              <Text className="text-black font-semibold text-lg pl-2">Our Services</Text>
+            </View>
+            <View style={styles.optionsContainer} className="mx-4 mt-6">
               <TouchableOpacity
                 style={{
                   flex: 1,
@@ -91,7 +69,7 @@ const Home = ({ route }) => {
                   marginRight: 6,
                   alignItems: 'center',
                   justifyContent: 'center',
-                  backgroundColor: '#e9e7e7',
+                  backgroundColor: '#f5f1f1', 
                   padding: 20, 
                   borderRadius: 10, 
                   marginBottom: 3,
@@ -99,6 +77,7 @@ const Home = ({ route }) => {
                   shadowOffset: { width: 0, height: 2 },
                   shadowOpacity: 0.2,
                   shadowRadius: 2,
+                  height: 180
                 }}
                 onPress={handleMedicalRemindersButton}
               >
@@ -106,9 +85,8 @@ const Home = ({ route }) => {
                   source={require('../assets/images/medical_reminders.png')}
                   style={styles.optionsImage}
                 />
-               
+                <Text style={{ color: 'black', marginTop: 12 }} className="text-center font-bold text-xl">Medical Reminders</Text>
               </TouchableOpacity>
-
               <TouchableOpacity
                 style={{
                   flex: 1,
@@ -116,7 +94,7 @@ const Home = ({ route }) => {
                   marginRight: 6,
                   alignItems: 'center',
                   justifyContent: 'center',
-                  backgroundColor: '#e9e7e7',
+                  backgroundColor: '#f5f1f1', 
                   padding: 20, 
                   borderRadius: 10, 
                   marginBottom: 3,
@@ -124,52 +102,72 @@ const Home = ({ route }) => {
                   shadowOffset: { width: 0, height: 2 },
                   shadowOpacity: 0.2,
                   shadowRadius: 2,
+                  height: 180,
                 }}
-                onPress={handleLocationTrackingButton}
+                onPress={handleMedicalRecordsButton}
               >
                 <Image
-                  source={require('../assets/images/location.png')}
+                  source={require('../assets/images/medical_records.png')}
                   style={styles.optionsImage}
                 />
-               
+                <Text style={{ color: 'black', marginTop: 12 }} className="text-center font-bold text-xl">Medical Records</Text>
               </TouchableOpacity>
-
-              <TouchableOpacity
-                style={{
-                  flex: 1,
-                  marginLeft: 6,
-                  marginRight: 6,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: '#e9e7e7',
-                  padding: 20, 
-                  borderRadius: 10, 
-                  marginBottom: 3,
-                  shadowColor: 'black', 
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.2,
-                  shadowRadius: 2,
-                }}
-                onPress={handleSOSButton}
-              >
-                <Image
-                  source={require('../assets/images/sos.png')}
-                  style={styles.optionsImage}
-                />
-               
-              </TouchableOpacity>
-            </View>
-            <View style={styles.servicesImages}>
-              <Text style={styles.servicesCaption} className="pl-2">Medical Records</Text>
-              <Text style={styles.servicesCaption} className="pl-2">Medical Reminder</Text>
-              <Text style={styles.servicesCaption} className="pl-1">Location Tracking</Text>
-              <Text style={styles.servicesCaption} className="pl-3">SOS System</Text>
-            </View>
-            <View>
-              <Text className="pl-2 mt-4 text-black font-semibold text-lg">Your Reminders</Text>
-            </View>
           </View>
-        </View>
+
+          <View style={styles.optionsContainer} className="mx-4 mt-8 mb-4">
+            <TouchableOpacity
+              style={{
+                flex: 1,
+                marginLeft: 6,
+                marginRight: 6,
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: '#f5f1f1', 
+                padding: 20, 
+                borderRadius: 10, 
+                marginBottom: 3,
+                shadowColor: 'black', 
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.2,
+                shadowRadius: 2,
+                height: 180,
+              }}
+              onPress={handleLocationTrackingButton}
+            >
+              <Image
+                source={require('../assets/images/location.png')}
+                style={styles.optionsImage}
+              />
+              <Text style={{ color: 'black', marginTop: 12 }} className="text-center font-bold text-xl">Location Tracking</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={{
+                flex: 1,
+                marginLeft: 6,
+                marginRight: 6,
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: '#f5f1f1', 
+                padding: 20, 
+                borderRadius: 10, 
+                marginBottom: 3,
+                shadowColor: 'black', 
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.2,
+                shadowRadius: 2,
+                height: 180,
+              }}
+              onPress={handleSOSButton}
+            >
+              <Image
+                source={require('../assets/images/sos.png')}
+                style={styles.optionsImage}
+              />
+              <Text style={{ color: 'black', marginTop: 12 }} className="text-center font-bold text-xl">SOS System</Text>
+            </TouchableOpacity>
+          </View>  
+          </View>
+        </ScrollView>
       </LinearGradient>
     </>
   );
@@ -249,17 +247,11 @@ const styles = StyleSheet.create({
     marginLeft: 200,
     marginTop: -83,
   },
+  optionsContainer: {
+    flexDirection: 'row'
+  },
   optionsImage: {
-    height: 50,
-    width: 50,
-  },
-  servicesImages: {
-    marginLeft: '2px',
-    flexDirection: 'row',
-    marginRight: '8px'
-  },
-  servicesCaption: {
-    color: 'black',
-    fontSize: 10,
-  },
+    height: 80,
+    width: 80,
+  }
 });
