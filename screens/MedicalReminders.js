@@ -131,7 +131,6 @@ export default function MedicalReminders() {
     }
   };
 
-
   const playAlarmSound = async () => {
     try {
       const { sound } = await Audio.Sound.createAsync(
@@ -166,19 +165,28 @@ export default function MedicalReminders() {
     }
   };
   
-  
+  // const dismissAlarm = async () => {
+  //   try {
+  //     if(alarmSound) {
+  //       await alarmSound.stopAsync();
+  //       await alarmSound.unloadAsync();
+  //       setAlarmSound(null);
+  //     }
+  //   } catch(error) {
+  //     console.error('Error dismissing alarm sound:', error);
+  //   }
+  // };
 
-  const dismissAlarm = async () => {
+  const dismissAlarm = async (sound) => {
     try {
-      if(alarmSound) {
-        await alarmSound.stopAsync();
-        await alarmSound.unloadAsync();
-        setAlarmSound(null);
+      if (sound) {
+        await sound.stopAsync();
+        await sound.unloadAsync();
       }
-    } catch(error) {
+    } catch (error) {
       console.error('Error dismissing alarm sound:', error);
     }
-  };
+  };  
 
   const handleSubmitForm = async () => {
     if(!calendarDate || !reminderData || !notesData) {
@@ -218,6 +226,13 @@ export default function MedicalReminders() {
     }
   };
 
+  // const handleEditReminderScreen = () => {
+  //   navigation.navigate('EditReminderScreen', { dismissAlarmFunction: dismissAlarm });
+  // };
+  const handleEditReminderScreen = () => {
+    navigation.navigate('EditReminderScreen', { dismissAlarmFunction: dismissAlarm, alarmSound: alarmSound });
+  };  
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>
@@ -242,23 +257,25 @@ export default function MedicalReminders() {
             {submittedData && submittedData.length > 0 ? (
               <View>
                 <Text className="mt-4 text-black font-extrabold text-lg">Your Reminders:</Text>
-                <View className="mb-40 ml-2">
-                  {submittedData.map((dateData, index) => (
-                    <View key={index}>
-                      <Text className="text-black text-md font-semibold mt-4">Reminders for {dateData.date}:</Text>
-                      <View style={styles.submittedDataContainer}>
-                        {dateData.reminders.map((data, reminderIndex) => (
-                          <View key={reminderIndex}>
-                            <Text style={styles.submittedData}>Reminder: {data.reminder}</Text>
-                            <Text style={styles.submittedData}>Notes: {data.notes}</Text>
-                            <Text style={styles.submittedData}>Time: {data.time}</Text>
-                            <Button title="Dismiss Alarm" onPress={dismissAlarm} disabled={!alarmSound} />
-                          </View>
-                        ))}
+                <TouchableOpacity onPress={handleEditReminderScreen} className="mb-4">
+                  <View className="mb-40 ml-2">
+                    {submittedData.map((dateData, index) => (
+                      <View key={index}>
+                        <Text className="text-black text-md font-semibold mt-4">Reminders for {dateData.date}:</Text>
+                        <View style={styles.submittedDataContainer}>
+                          {dateData.reminders.map((data, reminderIndex) => (
+                            <View key={reminderIndex}>
+                              <Text style={styles.submittedData}>Reminder: {data.reminder}</Text>
+                              <Text style={styles.submittedData}>Notes: {data.notes}</Text>
+                              <Text style={styles.submittedData}>Time: {data.time}</Text>
+                              {/* <Button title="Dismiss Alarm" onPress={dismissAlarm} disabled={!alarmSound} /> */}
+                            </View>
+                          ))}
+                        </View>
                       </View>
-                    </View>
-                  ))}
-                </View>
+                    ))}
+                  </View>
+                </TouchableOpacity>
               </View>
             ) : (
               <View className="mt-10">
