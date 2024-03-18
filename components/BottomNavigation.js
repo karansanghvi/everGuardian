@@ -1,12 +1,12 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 
-const EditReminderScreen = () => {
+const BottomNavigation = () => {
   return (
     <View>
-      <Text></Text>
+      <Text>bottom navigation</Text>
     </View>
   );
 }
 
-export default EditReminderScreen;
+export default BottomNavigation;

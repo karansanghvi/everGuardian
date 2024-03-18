@@ -165,28 +165,17 @@ export default function MedicalReminders() {
     }
   };
   
-  // const dismissAlarm = async () => {
-  //   try {
-  //     if(alarmSound) {
-  //       await alarmSound.stopAsync();
-  //       await alarmSound.unloadAsync();
-  //       setAlarmSound(null);
-  //     }
-  //   } catch(error) {
-  //     console.error('Error dismissing alarm sound:', error);
-  //   }
-  // };
-
-  const dismissAlarm = async (sound) => {
+  const dismissAlarm = async () => {
     try {
-      if (sound) {
-        await sound.stopAsync();
-        await sound.unloadAsync();
+      if(alarmSound) {
+        await alarmSound.stopAsync();
+        await alarmSound.unloadAsync();
+        setAlarmSound(null);
       }
-    } catch (error) {
+    } catch(error) {
       console.error('Error dismissing alarm sound:', error);
     }
-  };  
+  };
 
   const handleSubmitForm = async () => {
     if(!calendarDate || !reminderData || !notesData) {
@@ -226,9 +215,6 @@ export default function MedicalReminders() {
     }
   };
 
-  // const handleEditReminderScreen = () => {
-  //   navigation.navigate('EditReminderScreen', { dismissAlarmFunction: dismissAlarm });
-  // };
   const handleEditReminderScreen = () => {
     navigation.navigate('EditReminderScreen', { dismissAlarmFunction: dismissAlarm, alarmSound: alarmSound });
   };  
@@ -260,15 +246,15 @@ export default function MedicalReminders() {
                 <TouchableOpacity onPress={handleEditReminderScreen} className="mb-4">
                   <View className="mb-40 ml-2">
                     {submittedData.map((dateData, index) => (
-                      <View key={index}>
+                      <View key={index} style={styles.reminderContainer}>
                         <Text className="text-black text-md font-semibold mt-4">Reminders for {dateData.date}:</Text>
                         <View style={styles.submittedDataContainer}>
                           {dateData.reminders.map((data, reminderIndex) => (
-                            <View key={reminderIndex}>
+                            <View key={reminderIndex} style={styles.reminderItem}>
                               <Text style={styles.submittedData}>Reminder: {data.reminder}</Text>
                               <Text style={styles.submittedData}>Notes: {data.notes}</Text>
                               <Text style={styles.submittedData}>Time: {data.time}</Text>
-                              {/* <Button title="Dismiss Alarm" onPress={dismissAlarm} disabled={!alarmSound} /> */}
+                              <Button title="Dismiss Alarm" onPress={dismissAlarm} disabled={!alarmSound} />
                             </View>
                           ))}
                         </View>
@@ -459,6 +445,12 @@ const styles = StyleSheet.create({
     marginRight: 14,
     paddingTop: 10,
     borderRadius: 8,
+  },
+  reminderContainer: {
+    marginBottom: 80,
+  },
+  reminderItem: {
+    marginBottom: 10,
   },
   submittedData: {
     paddingLeft: 10,

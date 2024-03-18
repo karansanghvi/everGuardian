@@ -89,17 +89,6 @@ const Login = () => {
           >
             <Text className="text-lg text-white text-center font-extrabold">Login</Text>
           </TouchableOpacity>
-          <View style={styles.separator}>
-            <View style={styles.line}></View>
-            <Text style={styles.orText}>Or</Text>
-            <View style={styles.line}></View>
-          </View>
-          <TouchableOpacity className="p-2 bg-gray-100 rounded-2xl flex items-center">
-            <View className="flex-row justify-center items-center space-x-3">
-              <Image source={require('../assets/images/google.png')} className="w-10 h-10" />
-              <Text className="text-black text-lg ml-2">Login In With Google</Text>
-            </View>
-          </TouchableOpacity>
           <View className="flex-row justify-center mt-7">
             <Text className="text-gray-500 font-semibold">
               Don't have an account?
