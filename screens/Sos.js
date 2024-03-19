@@ -2,8 +2,12 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {ArrowLeftIcon} from 'react-native-heroicons/solid';
+import { useNavigation } from '@react-navigation/native';
 
 const Sos = () => {
+
+  const navigation = useNavigation();
+
   return (
     <>
       <SafeAreaView className="flex">
