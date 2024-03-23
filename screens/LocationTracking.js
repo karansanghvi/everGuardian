@@ -21,7 +21,6 @@ const ElderlyLocationTracking = () => {
   return (
     <View>
       <Text>Elderly Location Tracking: Share Location Code</Text>
-      
     </View>
   );
 }
