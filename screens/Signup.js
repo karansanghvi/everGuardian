@@ -46,7 +46,8 @@ const Signup = ({ navigation }) => {
             userType === "elderly" ? generateConfirmationCode() : null,
         });
 
-      navigation.navigate("Home", { firstName: firstName }, "LocationTracking", { userType: userType });
+      // navigation.navigate("Home", { firstName: firstName }, "LocationTracking", { userType: userType });
+      navigation.navigate("Home", { firstName: firstName, userType: userType });
     } catch (error) {
       console.error("Error during sign-up:", error);
       alert(error.message);
