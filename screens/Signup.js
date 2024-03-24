@@ -109,6 +109,8 @@ const Signup = ({ navigation }) => {
           timestamp: serverTimestamp(), // Use serverTimestamp here
         });
 
+        await AsyncStorage.setItem('confirmationCode', confirmationCode);
+
         navigation.navigate('Home');
         alert("Connected to user with userId:", elderlyUserId);
       } else {
