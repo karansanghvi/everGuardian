@@ -1,180 +1,138 @@
-import { 
-  View, Text, TouchableOpacity, TextInput, Image, ScrollView, StyleSheet, Platform, Button
- } from 'react-native'
-import React, { useState } from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { useNavigation } from '@react-navigation/native'
-import {ArrowLeftIcon} from 'react-native-heroicons/solid'
-import { Dropdown } from 'react-native-element-dropdown'
-import AntDesign from '@expo/vector-icons/AntDesign'
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { ArrowLeftIcon } from 'react-native-heroicons/solid';
+import DocumentPicker from 'react-native-document-picker'; // Import DocumentPicker
 
 const MedicalRecords = () => {
+  const [documents, setDocuments] = useState([]);
 
-  const [bloodGroup, setBloodGroup] = useState(null);
-  const [gender, setGender] = useState(null);
-  const navigation = useNavigation();
+  const handleUpload = async () => {
+    try {
+      const res = await DocumentPicker.pick({
+        type: [DocumentPicker.types.images, DocumentPicker.types.pdf], // Allow images and PDFs
+      });
+      console.log('URI : ' + res.uri);
+      console.log('Type : ' + res.type);
+      console.log('Name : ' + res.name);
+      // Add the selected document to the documents array
+      setDocuments(prevDocuments => [...prevDocuments, { uri: res.uri, type: res.type, name: res.name }]);
+    } catch (err) {
+      if (DocumentPicker.isCancel(err)) {
+        console.log('User cancelled the picker');
+      } else {
+        console.error('Error while picking the file', err);
+      }
+    }
+  };
 
   const handleSubmitButton = () => {
-    navigation.navigate('Home');
-  }
-
-  const bloodGroupData = [
-    { label: 'A+', value: '1' },
-    { label: 'O+', value: '2' },
-    { label: 'B+', value: '3' },
-    { label: 'AB+', value: '4' },
-    { label: 'A-', value: '5' },
-    { label: 'O-', value: '6' },
-    { label: 'B-', value: '7' },
-    { label: 'AB-', value: '8' },
-  ];
-
-  const genderData = [
-    { label: 'Male', value: '1' },
-    { label: 'Female', value: '2' },
-    { label: 'Other', value: '3' },
-  ]
+    // Perform submission logic here
+    // For demonstration purposes, just logging the documents
+    console.log('Submitted Documents:', documents);
+  };
 
   return (
     <>
-      <SafeAreaView className="flex bg-white">
-        <View className="flex-row justify-start mt-4">
-          <TouchableOpacity
-            onPress={() => navigation.goBack()}
-            className="bg-black p-2 rounded-tr-2xl rounded-bl-2xl ml-4 mt-4"
-          >
-            <ArrowLeftIcon size={20} color="white" />
-          </TouchableOpacity>
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
           <Text style={styles.title}>Medical Records</Text>
         </View>
       </SafeAreaView>
-      <ScrollView style={{ flex: 1 }} className="bg-white">
-        <View className="rounded-tl-2xl rounded-tr-2xl flex-1 bg-white px-8 pt-8 mt-6">
-          <View className="form space-y-2">
-            <Dropdown
-              style={styles.dropdown}
-              placeholderStyle={styles.placeholderStyle}
-              selectedTextStyle={styles.selectedTextStyle}
-              inputSearchStyle={styles.inputSearchStyle}
-              iconStyle={styles.iconStyle}
-              data={bloodGroupData}
-              search
-              maxHeight={300}
-              labelField="label"
-              valueField="value"
-              placeholder="Select Blood Group"
-              searchPlaceholder='Search...'
-              value={bloodGroup}
-              onChange={item => {
-                setBloodGroup(item.value);
-              }}
-              renderLeftIcon={() => (
-                <AntDesign style={styles.icon} color="black" name="Safety" size={20} />
-              )}
-            />
-            <Dropdown
-                style={styles.dropdown}
-                placeholderStyle={styles.placeholderStyle}
-                selectedTextStyle={styles.selectedTextStyle}
-                inputSearchStyle={styles.inputSearchStyle}
-                iconStyle={styles.iconStyle}
-                data={genderData}
-                search
-                maxHeight={300}
-                labelField="label"
-                valueField="value"
-                placeholder="Select Gender"
-                searchPlaceholder='Search...'
-                value={gender}
-                onChange={item => {
-                  setGender(item.value);
-                }}
-                renderLeftIcon={() => (
-                  <AntDesign style={styles.icon} color="black" name="Safety" size={20} />
-                )}
-            />          
-            <Text className="text-black ml-1 text-lg">Enter Address:</Text>
-              <TextInput
-                className="p-4 bg-gray-100 text-black rounded-xl mb-3"
-                placeholder='Address'
-              />
-            <Text className="text-black ml-1 text-lg">Any Alergy?</Text>
-              <TextInput
-                className="p-4 bg-gray-100 text-black rounded-xl mb-3"
-                placeholder='Alergy'
-              />
-            <Text className="text-black ml-1 text-lg">Enter Current Medications:</Text>
-              <TextInput
-                className="p-4 bg-gray-100 text-black rounded-xl mb-3"
-                placeholder='Current Medications'
-              />
-            <Text className="text-black ml-1 text-lg">Enter Current Diseases:</Text>
-              <TextInput
-                className="p-4 bg-gray-100 text-black rounded-xl mb-3"
-                placeholder='Current Diseases'
-              />
-              <TouchableOpacity 
-                className="py-3 bg-black rounded-lg mb-4"
-                onPress={handleSubmitButton}
-              >
-                <Text className="text-lg text-white text-center font-extrabold">
-                  Submit
-                </Text>
-              </TouchableOpacity>
-          </View>
+      <ScrollView style={styles.scrollView}>
+        <View style={styles.form}>
+          <TouchableOpacity
+            style={styles.uploadButton} // Add a new style for upload button
+            onPress={handleUpload}
+          >
+            <Text style={styles.uploadButtonText}>Upload Document</Text>
+          </TouchableOpacity>
+          {documents.map((document, index) => (
+            <View key={index} style={styles.document}>
+              <Text style={styles.documentName}>{document.name}</Text>
+              <Text style={styles.documentType}>{document.type}</Text>
+              <Text style={styles.documentURI}>{document.uri}</Text>
+            </View>
+          ))}
+          <TouchableOpacity 
+            style={styles.submitButton}
+            onPress={handleSubmitButton}
+          >
+            <Text style={styles.submitButtonText}>
+              Submit
+            </Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </>
   )
 }
 
-export default MedicalRecords
+export default MedicalRecords;
 
 const styles = StyleSheet.create({
-  separator: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 10,
-  },
-  line: {
+  container: {
     flex: 1,
-    height: 1,
-    backgroundColor: 'lightgray',
-    marginHorizontal: 4,
+    backgroundColor: 'white',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 20,
   },
   title: {
     fontSize: 20,
     fontWeight: '700',
     color: '#1d1d1d',
+  },
+  scrollView: {
+    flex: 1,
+    backgroundColor: 'white',
+  },
+  form: {
+    paddingHorizontal: 20,
+    paddingVertical: 20,
+  },
+  uploadButton: {
+    backgroundColor: 'black',
+    padding: 15,
+    borderRadius: 10,
     marginTop: 20,
-    marginLeft: 60,
+    alignItems: 'center',
   },
-  orText: {
-    color: 'black',
+  uploadButtonText: {
     fontSize: 16,
+    color: 'white',
+    fontWeight: 'bold',
   },
-  dropdown: {
-    margin: 16,
-    height: 50,
-    borderBottomColor: 'gray',
-    borderBottomWidth: 0.5,
-    marginTop: -42,
+  document: {
+    backgroundColor: '#f0f0f0',
+    padding: 10,
+    marginTop: 10,
+    borderRadius: 10,
   },
-  icon: {
-    marginRight: 5,
-  },
-  placeholderStyle: {
+  documentName: {
     fontSize: 16,
+    fontWeight: 'bold',
   },
-  selectedTextStyle: {
+  documentType: {
+    fontSize: 14,
+    color: 'gray',
+  },
+  documentURI: {
+    fontSize: 14,
+    color: 'blue',
+  },
+  submitButton: {
+    backgroundColor: 'black',
+    padding: 15,
+    borderRadius: 10,
+    marginTop: 20,
+    alignItems: 'center',
+  },
+  submitButtonText: {
     fontSize: 16,
-  },
-  iconStyle: {
-    width: 20,
-    height: 20,
-  },
-  inputSearchStyle: {
-    height: 40,
-    fontSize: 16,
+    color: 'white',
+    fontWeight: 'bold',
   },
 });
