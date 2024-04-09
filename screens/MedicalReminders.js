@@ -215,9 +215,9 @@ export default function MedicalReminders() {
     }
   };
 
-  const handleEditReminderScreen = () => {
-    navigation.navigate('EditReminderScreen', { dismissAlarmFunction: dismissAlarm, alarmSound: alarmSound });
-  };  
+  // const handleEditReminderScreen = () => {
+  //   navigation.navigate('EditReminderScreen', { dismissAlarmFunction: dismissAlarm, alarmSound: alarmSound });
+  // };  
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -243,7 +243,10 @@ export default function MedicalReminders() {
             {submittedData && submittedData.length > 0 ? (
               <View>
                 <Text className="mt-4 text-black font-extrabold text-lg">Your Reminders:</Text>
-                <TouchableOpacity onPress={handleEditReminderScreen} className="mb-4">
+                <TouchableOpacity 
+                  // onPress={handleEditReminderScreen} 
+                  className="mb-4"
+                >
                   <View className="mb-40 ml-2">
                     {submittedData.map((dateData, index) => (
                       <View key={index} style={styles.reminderContainer}>
@@ -450,7 +453,7 @@ const styles = StyleSheet.create({
     marginBottom: 80,
   },
   reminderItem: {
-    marginBottom: 10,
+    marginBottom: 60,
   },
   submittedData: {
     paddingLeft: 10,
