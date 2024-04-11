@@ -39,6 +39,27 @@ export default function MedicalReminders() {
   const [selectedTime, setSelectedTime] = useState(null);
   const [submittedData, setSubmittedData] = useState([]);
   const [alarmSound, setAlarmSound] = useState(null);
+  const [isReminderVisible, setIsReminderVisible] = useState(false);
+  const [selectedReminder, setSelectedReminder] = useState(null);
+
+  useEffect(() => {
+    // Fetch reminder data from Firebase based on selectedDate
+    if (selectedDate) {
+      fetchReminders(selectedDate);
+    }
+  }, [selectedDate]);
+
+  // Function to fetch reminders from Firebase based on date
+  const fetchReminders = async (date) => {
+    try {
+      const remindersRef = firestore.collection("reminders");
+      const snapshot = await remindersRef.where('date', '==', date).get();
+      const data = snapshot.docs.map(doc => doc.data());
+      setSubmittedData(data);
+    } catch (error) {
+      console.error("Error fetching reminders: ", error);
+    }
+  };
 
   useEffect(() => {
     const requestPermission = async() => {
@@ -75,7 +96,6 @@ export default function MedicalReminders() {
     }
   };
   
-
   const onDayPress = (day) => {
     setSelectedDate(day.dateString);
   };
@@ -216,8 +236,20 @@ export default function MedicalReminders() {
   };
 
   // const handleEditReminderScreen = () => {
-  //   navigation.navigate('EditReminderScreen', { dismissAlarmFunction: dismissAlarm, alarmSound: alarmSound });
-  // };  
+  //   setIsReminderVisible(!isReminderVisible);
+  // }
+
+  const handleEditReminderScreen = (reminder) => {
+    console.log("Selected Reminder:", reminder); // Add this line for debugging
+    setSelectedReminder(reminder);
+    setIsReminderVisible(true); // Ensure the modal is set to be visible
+  };
+  
+  // Also, add logging in the useEffect where submittedData is set
+  useEffect(() => {
+    console.log("Submitted Data:", submittedData); // Add this line for debugging
+  }, [submittedData]);
+  
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -244,7 +276,7 @@ export default function MedicalReminders() {
               <View>
                 <Text className="mt-4 text-black font-extrabold text-lg">Your Reminders:</Text>
                 <TouchableOpacity 
-                  // onPress={handleEditReminderScreen} 
+                  onPress={handleEditReminderScreen} 
                   className="mb-4"
                 >
                   <View className="mb-40 ml-2">
@@ -265,6 +297,23 @@ export default function MedicalReminders() {
                     ))}
                   </View>
                 </TouchableOpacity>
+
+                <Modal visible={isReminderVisible} animationType='slide'>
+                  <View style={styles.modalContainer}>
+                    {/* <Text>Hello World</Text> */}
+                    {selectedReminder && (
+                      <View>
+                        <Text>Date: {selectedReminder.date}</Text>
+                        <Text>Reminder: {selectedReminder.reminder}</Text>
+                        <Text>Notes: {selectedReminder.notes}</Text>
+                        <Text>Time: {selectedReminder.time}</Text>
+                      </View>
+                    )}
+                    <TouchableOpacity onPress={handleEditReminderScreen} style={styles.closeButton}>
+                      <Text style={styles.closeButtonText}>Close Modal</Text>
+                    </TouchableOpacity>
+                  </View>
+                </Modal>
               </View>
             ) : (
               <View className="mt-10">
@@ -449,14 +498,25 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     borderRadius: 8,
   },
-  reminderContainer: {
-    marginBottom: 80,
-  },
   reminderItem: {
-    marginBottom: 60,
+    marginBottom: 10,
   },
   submittedData: {
     paddingLeft: 10,
     marginBottom: 5,
-  }
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  closeButton: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: 'blue',
+    borderRadius: 5,
+  },
+  closeButtonText: {
+    color: 'white',
+  },
 });
