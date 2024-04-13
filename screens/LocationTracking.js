@@ -3,7 +3,7 @@ import { View, Text, SafeAreaView, TouchableOpacity, StyleSheet } from 'react-na
 import MapView, { Marker } from 'react-native-maps';
 import { useRoute } from '@react-navigation/native'; 
 import { useNavigation } from '@react-navigation/native';
-import {ArrowLeftIcon} from 'react-native-heroicons/solid';
+import { ArrowLeftIcon } from 'react-native-heroicons/solid';
 import * as Location from 'expo-location';
 import { firestore, auth } from '../config'; 
 
@@ -13,6 +13,8 @@ const LocationTracking = () => {
   const [userType, setUserType] = useState(null); 
   const [location, setLocation] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
+  const [confirmationCode, setConfirmationCode] = useState(null); 
+  const [guardianLocation, setGuardianLocation] = useState(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -23,6 +25,7 @@ const LocationTracking = () => {
           if (userDoc.exists) {
             const userData = userDoc.data();
             setUserType(userData.userType);
+            setConfirmationCode(userData.confirmationCode);
           } else {
             console.log("User data not found");
           }
@@ -55,21 +58,54 @@ const LocationTracking = () => {
     })();
   }, []);
 
+  useEffect(() => {
+    const fetchGuardianLocation = async () => {
+      try {
+        if (userType === "guardian" && confirmationCode) {       
+          const guardianDoc = await firestore
+            .collection('guardians')
+            .doc(confirmationCode)
+            .get();
+  
+          if (guardianDoc.exists) {
+            const guardianData = guardianDoc.data();
+            setGuardianLocation(guardianData.location);
+
+            if (guardianData.confirmationCode === confirmationCode) {
+              const { latitude, longitude } = guardianData.location;
+              await firestore.collection('location').doc(confirmationCode).update({
+                latitude,
+                longitude,
+              });
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching guardian location:", error);
+      }
+    };
+  
+    fetchGuardianLocation();
+  }, [userType, confirmationCode]);
+  
+
   const updateLocationInFirestore = async (currentLocation) => {
     try {
       const currentUser = auth.currentUser;
       if (currentUser) {
-        await firestore.collection('users').doc(currentUser.uid).update({
-          location: {
-            latitude: currentLocation.coords.latitude,
-            longitude: currentLocation.coords.longitude,
-          }
-        });
+        const userData = {
+          latitude: currentLocation.coords.latitude,
+          longitude: currentLocation.coords.longitude,
+          confirmationCode: confirmationCode,
+          userType: userType 
+        };
+  
+        await firestore.collection('location').doc(currentUser.uid).set(userData);
       }
     } catch (error) {
       console.error("Error updating location in Firestore:", error);
     }
-  };
+  };  
 
   return (
     <>
@@ -85,37 +121,50 @@ const LocationTracking = () => {
         </View>
       </SafeAreaView>
       {userType === "elderly" ? (
-        <ElderlyLocationTracking location={location} errorMessage={errorMessage} /> 
+        <ElderlyLocationTracking location={location} errorMessage={errorMessage} confirmationCode={confirmationCode} /> 
       ) : (
-        <GuardianLocationTracking /> 
+        <GuardianLocationTracking guardianLocation={guardianLocation} confirmationCode={confirmationCode} /> 
       )}
     </>
   );
 };
 
-const ElderlyLocationTracking = ({ location, errorMessage }) => {
+const ElderlyLocationTracking = ({ location, errorMessage, confirmationCode }) => {
   return (
     <View style={{ flex: 1 }}>
       {errorMessage ? (
         <Text>{errorMessage}</Text>
       ) : location ? (
-          <MapView
-            style={styles.map}
-            initialRegion={{
-              latitude: location.coords.latitude,
-              longitude: location.coords.longitude,
-              latitudeDelta: 0.0922,
-              longitudeDelta: 0.0421,
-            }}
-          >
-            <Marker
-              coordinate={{
+          <>
+            <MapView
+              style={styles.map}
+              initialRegion={{
                 latitude: location.coords.latitude,
                 longitude: location.coords.longitude,
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
               }}
-              title="Your Location"
-            />
-          </MapView>
+            >
+              <Marker
+                coordinate={{
+                  latitude: location.coords.latitude,
+                  longitude: location.coords.longitude,
+                }}
+                title="Your Location"
+              />
+            </MapView>
+            <View style={styles.coordinatesContainer}>
+              <Text style={styles.coordinatesText}>
+                Latitude: {location.coords.latitude.toFixed(6)}
+              </Text>
+              <Text style={styles.coordinatesText}>
+                Longitude: {location.coords.longitude.toFixed(6)}
+              </Text>
+              <Text style={styles.coordinatesText}>
+                Confirmation Code: {confirmationCode}
+              </Text>
+            </View>
+          </>
       ) : (
         <Text>Loading...</Text>
       )}
@@ -123,10 +172,11 @@ const ElderlyLocationTracking = ({ location, errorMessage }) => {
   );
 }
 
-const GuardianLocationTracking = () => {
+const GuardianLocationTracking = ({ confirmationCode }) => {
   return (
     <View style={{ flex: 1 }}>
-      <Text>Guardian Location Tracking: View Elderly Location</Text>
+      <Text>Guardian Location Tracking</Text>
+      <Text>Confirmation Code: {confirmationCode}</Text>
     </View>
   );
 }
@@ -149,4 +199,4 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     borderRadius: 10,
   }
-})
+});
