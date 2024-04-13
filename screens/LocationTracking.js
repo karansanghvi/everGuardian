@@ -58,37 +58,6 @@ const LocationTracking = () => {
     })();
   }, []);
 
-  useEffect(() => {
-    const fetchGuardianLocation = async () => {
-      try {
-        if (userType === "guardian" && confirmationCode) {       
-          const guardianDoc = await firestore
-            .collection('guardians')
-            .doc(confirmationCode)
-            .get();
-  
-          if (guardianDoc.exists) {
-            const guardianData = guardianDoc.data();
-            setGuardianLocation(guardianData.location);
-
-            if (guardianData.confirmationCode === confirmationCode) {
-              const { latitude, longitude } = guardianData.location;
-              await firestore.collection('location').doc(confirmationCode).update({
-                latitude,
-                longitude,
-              });
-            }
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching guardian location:", error);
-      }
-    };
-  
-    fetchGuardianLocation();
-  }, [userType, confirmationCode]);
-  
-
   const updateLocationInFirestore = async (currentLocation) => {
     try {
       const currentUser = auth.currentUser;
@@ -99,7 +68,7 @@ const LocationTracking = () => {
           confirmationCode: confirmationCode,
           userType: userType 
         };
-  
+
         await firestore.collection('location').doc(currentUser.uid).set(userData);
       }
     } catch (error) {
@@ -123,7 +92,7 @@ const LocationTracking = () => {
       {userType === "elderly" ? (
         <ElderlyLocationTracking location={location} errorMessage={errorMessage} confirmationCode={confirmationCode} /> 
       ) : (
-        <GuardianLocationTracking guardianLocation={guardianLocation} confirmationCode={confirmationCode} /> 
+        <GuardianLocationTracking guardianLocation={guardianLocation} confirmationCode={confirmationCode} userType={userType} /> 
       )}
     </>
   );
@@ -172,14 +141,91 @@ const ElderlyLocationTracking = ({ location, errorMessage, confirmationCode }) =
   );
 }
 
-const GuardianLocationTracking = ({ confirmationCode }) => {
+const GuardianLocationTracking = ({ guardianLocation, confirmationCode, userType }) => {
+  const [elderlyLocation, setElderlyLocation] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchElderlyLocation = async () => {
+      try {
+        if (userType === "guardian" && confirmationCode) {
+          console.log("Fetching location data for elderly with confirmation code:", confirmationCode);
+          const elderlyLocationDoc = await firestore
+            .collection('location')
+            .doc(confirmationCode)
+            .get();
+    
+          if (elderlyLocationDoc.exists) {
+            const elderlyLocationData = elderlyLocationDoc.data();
+            console.log("Elderly Location Data:", elderlyLocationData);
+            setElderlyLocation({
+              latitude: elderlyLocationData.latitude,
+              longitude: elderlyLocationData.longitude,
+            });
+          } else {
+            console.log("No location data found for elderly with confirmation code:", confirmationCode);
+          }
+        } else {
+          console.log("Not a guardian or confirmation code is null");
+        }
+      } catch (error) {
+        console.error("Error fetching elderly location:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchElderlyLocation();
+  }, [confirmationCode, userType]);
+
   return (
     <View style={{ flex: 1 }}>
-      <Text>Guardian Location Tracking</Text>
-      <Text>Confirmation Code: {confirmationCode}</Text>
+      <View style={styles.coordinatesContainer}>
+        <Text style={styles.coordinatesText}>
+          User Type: {userType}
+        </Text>
+        <Text style={styles.coordinatesText}>
+          Confirmation Code: {confirmationCode}
+        </Text>
+      </View>
+      {loading ? (
+        <Text>Loading...</Text>
+      ) : elderlyLocation ? (
+        <>
+          <MapView
+            style={styles.map}
+            initialRegion={{
+              latitude: elderlyLocation.latitude,
+              longitude: elderlyLocation.longitude,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
+            }}
+          >
+            <Marker
+              coordinate={{
+                latitude: elderlyLocation.latitude,
+                longitude: elderlyLocation.longitude,
+              }}
+              title="Elderly's Location"
+            />
+          </MapView>
+          <View style={styles.coordinatesContainer}>
+            <Text style={styles.coordinatesText}>
+              Latitude: {elderlyLocation.latitude.toFixed(6)}
+            </Text>
+            <Text style={styles.coordinatesText}>
+              Longitude: {elderlyLocation.longitude.toFixed(6)}
+            </Text>
+          </View>
+        </>
+      ) : (
+        <Text>No location data available for the elderly.</Text>
+      )}
     </View>
   );
-}
+};
+
+
 
 export default LocationTracking;
 
@@ -198,5 +244,13 @@ const styles = StyleSheet.create({
     marginRight: 10,
     marginBottom: 10,
     borderRadius: 10,
-  }
+  },
+  coordinatesContainer: {
+    marginVertical: 10,
+    alignItems: 'center',
+  },
+  coordinatesText: {
+    fontSize: 16,
+    color: '#333',
+  },
 });
