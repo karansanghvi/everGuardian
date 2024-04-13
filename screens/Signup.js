@@ -46,7 +46,8 @@ const Signup = ({ navigation }) => {
             userType === "elderly" ? generateConfirmationCode() : null,
         });
 
-      navigation.navigate("Home", { firstName: firstName }, "LocationTracking", { userType: userType });
+      // navigation.navigate("Home", { firstName: firstName }, "LocationTracking", { userType: userType });
+      navigation.navigate("Home", { firstName: firstName, userType: userType });
     } catch (error) {
       console.error("Error during sign-up:", error);
       alert(error.message);
@@ -107,6 +108,8 @@ const Signup = ({ navigation }) => {
           elderlyUserId,
           timestamp: serverTimestamp(), // Use serverTimestamp here
         });
+
+        await AsyncStorage.setItem('confirmationCode', confirmationCode);
 
         navigation.navigate('Home');
         alert("Connected to user with userId:", elderlyUserId);
