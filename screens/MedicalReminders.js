@@ -39,8 +39,7 @@ export default function MedicalReminders() {
   const [selectedTime, setSelectedTime] = useState(null);
   const [submittedData, setSubmittedData] = useState([]);
   const [alarmSound, setAlarmSound] = useState(null);
-  const [isReminderVisible, setIsReminderVisible] = useState(false);
-  const [selectedReminder, setSelectedReminder] = useState(null);
+  const [editingReminder, setEditingReminder] = useState(null);
 
   useEffect(() => {
     // Fetch reminder data from Firebase based on selectedDate
@@ -235,21 +234,52 @@ export default function MedicalReminders() {
     }
   };
 
-  // const handleEditReminderScreen = () => {
-  //   setIsReminderVisible(!isReminderVisible);
-  // }
+  const handleEditReminder = (reminder) => {
+    setEditingReminder(reminder);
+    setReminderData(reminder.reminder);
+    setNotesData(reminder.notes);
+    setSelectedTime(new Date(`01/01/2000 ${reminder.time}`)); 
+    setDatePickerVisible(true);
+    setShowPopup(true);
 
-  const handleEditReminderScreen = (reminder) => {
-    console.log("Selected Reminder:", reminder); // Add this line for debugging
-    setSelectedReminder(reminder);
-    setIsReminderVisible(true); // Ensure the modal is set to be visible
+    setReminderData(reminder.reminder);
+    setNotesData(reminder.notes);
   };
-  
-  // Also, add logging in the useEffect where submittedData is set
-  useEffect(() => {
-    console.log("Submitted Data:", submittedData); // Add this line for debugging
-  }, [submittedData]);
-  
+
+  const handleDeleteReminder = async (reminder) => {
+    try {
+      const remindersRef = firestore.collection("reminders");
+      await remindersRef.doc(reminder.id).delete();
+
+      setSubmittedData((prevData) => prevData.filter((item) => item.id !== reminder.id));
+    } catch (error) {
+      console.error("Error deleting reminder: ", error);
+    }
+  };
+
+  const handleUpdateReminder = async () => {
+    try {
+      const remindersRef = firestore.collection("reminders");
+      const updatedReminder = {
+        date: calendarDate,
+        reminder: reminderData,
+        notes: notesData,
+        time: selectedTime.toLocaleTimeString(),
+      };
+      await remindersRef.doc(editingReminder.id).update(updatedReminder);
+
+      setSubmittedData((prevData) =>
+        prevData.map((item) =>
+          item.id === editingReminder.id ? updatedReminder : item
+        )
+      );
+
+      setEditingReminder(null);
+      setShowPopup(false);
+    } catch (error) {
+      console.error("Error updating reminder: ", error);
+    }
+  };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -274,11 +304,7 @@ export default function MedicalReminders() {
           <View>
             {submittedData && submittedData.length > 0 ? (
               <View>
-                <Text className="mt-4 text-black font-extrabold text-lg">Your Reminders:</Text>
-                <TouchableOpacity 
-                  onPress={handleEditReminderScreen} 
-                  className="mb-4"
-                >
+                <Text style={{ marginTop: 10, fontSize: 18, fontWeight: 'bold', color: 'black' }}>Your Reminders:</Text>
                   <View className="mb-40 ml-2">
                     {submittedData.map((dateData, index) => (
                       <View key={index} style={styles.reminderContainer}>
@@ -289,44 +315,24 @@ export default function MedicalReminders() {
                               <Text style={styles.submittedData}>Reminder: {data.reminder}</Text>
                               <Text style={styles.submittedData}>Notes: {data.notes}</Text>
                               <Text style={styles.submittedData}>Time: {data.time}</Text>
-                              <Button title="Dismiss Alarm" onPress={dismissAlarm} disabled={!alarmSound} />
+                              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                <Button title="Edit" onPress={() => handleEditReminder(data)} />
+                                <Button title="Dismiss Alarm" onPress={dismissAlarm} disabled={!alarmSound} />
+                                <Button title="Delete" onPress={() => handleDeleteReminder(data)} />
+                              </View>
                             </View>
                           ))}
                         </View>
                       </View>
                     ))}
                   </View>
-                </TouchableOpacity>
-
-                <Modal visible={isReminderVisible} animationType='slide'>
-                  <View style={styles.modalContainer}>
-                    {/* <Text>Hello World</Text> */}
-                    {selectedReminder && (
-                      <View>
-                        <Text>Date: {selectedReminder.date}</Text>
-                        <Text>Reminder: {selectedReminder.reminder}</Text>
-                        <Text>Notes: {selectedReminder.notes}</Text>
-                        <Text>Time: {selectedReminder.time}</Text>
-                      </View>
-                    )}
-                    <TouchableOpacity onPress={handleEditReminderScreen} style={styles.closeButton}>
-                      <Text style={styles.closeButtonText}>Close Modal</Text>
-                    </TouchableOpacity>
-                  </View>
-                </Modal>
               </View>
             ) : (
-              <View className="mt-10">
-                <Text className="text-black text-lg font-extrabold text-center">
-                  {selectedDate ? 'No reminders' : 'Select a date to view reminders'}
-                </Text>
-              </View>
+              <Text style={{ marginTop: 10, fontSize: 18, color: 'black' }}>
+                {selectedDate ? 'No reminders' : 'Select a date to view reminders'}
+              </Text>
             )}
           </View>
-
-        </View>
-        <View className="mb-40 ml-6">
-        
         </View>
         <View style={styles.plusContainer}>
           <TouchableOpacity
@@ -378,18 +384,21 @@ export default function MedicalReminders() {
               />
 
               <View className="flex-row justify-center gap-4">
-                <TouchableOpacity
-                  style={styles.submitButton}
-                  onPress={handleSubmitForm}
-                >
-                  <Text style={styles.submitButtonText}>Submit</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.cancelButton}
-                  onPress={() => setShowPopup(false)}
-                >
-                  <Text style={styles.cancelButtonText}>Cancel</Text>
-                </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.submitButton, { backgroundColor: 'green' }]}
+                onPress={editingReminder ? handleUpdateReminder : handleSubmitForm}
+              >
+                <Text style={styles.submitButtonText}>{editingReminder ? 'Update' : 'Submit'}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.submitButton, { backgroundColor: 'red' }]}
+                onPress={() => {
+                  setEditingReminder(null);
+                  setShowPopup(false);
+                }}
+              >
+                <Text style={styles.submitButtonText}>Cancel</Text>
+              </TouchableOpacity>
               </View>
             </View>
           </View>

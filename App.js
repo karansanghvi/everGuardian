@@ -8,7 +8,7 @@ import ForgotPassword from "./screens/ForgotPassword";
 import MedicalReminders from "./screens/MedicalReminders";
 import LocationTracking from "./screens/LocationTracking";
 import Sos from "./screens/Sos";
-import EditReminderScreen from "./screens/EditReminderScreen";
+import DetailsScreen from "./screens/DetailsScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -93,8 +93,8 @@ function App() {
           }}
         />
         <Stack.Screen
-          name="EditReminderScreen"
-          component={EditReminderScreen}
+          name="DetailsScreen"
+          component={DetailsScreen}
           options={{
             headerShown: false
           }}
