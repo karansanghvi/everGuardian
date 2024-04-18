@@ -224,8 +224,24 @@ const MessageScreen = () => {
 };
 
 
-const Sos = () => {
+const SosScreen = ({ contacts }) => {
+
   const navigation = useNavigation();
+
+  const sendSOSMessage = async () => {
+    const message = "I need help!";
+    const phoneNumbers = contacts.map(contact => contact.phoneNumber);
+  
+    try {
+      for (const phoneNumber of phoneNumbers) {
+        await SMS.sendSMSAsync(phoneNumber, message);
+      }
+      Alert.alert('Success', 'Help SMS sent successfully');
+    } catch (error) {
+      Alert.alert('Error', 'Failed to send SMS');
+      console.error(error);
+    }
+  };  
 
   return (
     <>
@@ -289,7 +305,7 @@ const Sos = () => {
   );
 };
 
-export default Sos;
+export default SosScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -339,11 +355,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     width: '100%',
     alignSelf: 'stretch',
-  },
-  popupTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    marginBottom: 10,
   },
   input: {
     borderWidth: 1,
