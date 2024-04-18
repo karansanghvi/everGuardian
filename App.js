@@ -8,7 +8,6 @@ import ForgotPassword from "./screens/ForgotPassword";
 import MedicalReminders from "./screens/MedicalReminders";
 import LocationTracking from "./screens/LocationTracking";
 import Sos from "./screens/Sos";
-import DetailsScreen from "./screens/DetailsScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -88,13 +87,6 @@ function App() {
         <Stack.Screen
           name="MedicalReminders"
           component={MedicalReminders}
-          options={{
-            headerShown: false
-          }}
-        />
-        <Stack.Screen
-          name="DetailsScreen"
-          component={DetailsScreen}
           options={{
             headerShown: false
           }}

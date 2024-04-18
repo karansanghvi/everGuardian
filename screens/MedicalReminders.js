@@ -234,17 +234,17 @@ export default function MedicalReminders() {
     }
   };
 
-  const handleEditReminder = (reminder) => {
-    setEditingReminder(reminder);
-    setReminderData(reminder.reminder);
-    setNotesData(reminder.notes);
-    setSelectedTime(new Date(`01/01/2000 ${reminder.time}`)); 
-    setDatePickerVisible(true);
-    setShowPopup(true);
+  // const handleEditReminder = (reminder) => {
+  //   setEditingReminder(reminder);
+  //   setReminderData(reminder.reminder);
+  //   setNotesData(reminder.notes);
+  //   setSelectedTime(new Date(`01/01/2000 ${reminder.time}`)); 
+  //   setDatePickerVisible(true);
+  //   setShowPopup(true);
 
-    setReminderData(reminder.reminder);
-    setNotesData(reminder.notes);
-  };
+  //   setReminderData(reminder.reminder);
+  //   setNotesData(reminder.notes);
+  // };
 
   const handleDeleteReminder = async (reminder) => {
     try {
@@ -257,6 +257,30 @@ export default function MedicalReminders() {
     }
   };
 
+  // const handleUpdateReminder = async () => {
+  //   try {
+  //     const remindersRef = firestore.collection("reminders");
+  //     const updatedReminder = {
+  //       date: calendarDate,
+  //       reminder: reminderData,
+  //       notes: notesData,
+  //       time: selectedTime.toLocaleTimeString(),
+  //     };
+  //     await remindersRef.doc(editingReminder.id).update(updatedReminder);
+
+  //     setSubmittedData((prevData) =>
+  //       prevData.map((item) =>
+  //         item.id === editingReminder.id ? updatedReminder : item
+  //       )
+  //     );
+
+  //     setEditingReminder(null);
+  //     setShowPopup(false);
+  //   } catch (error) {
+  //     console.error("Error updating reminder: ", error);
+  //   }
+  // };
+
   const handleUpdateReminder = async () => {
     try {
       const remindersRef = firestore.collection("reminders");
@@ -264,22 +288,47 @@ export default function MedicalReminders() {
         date: calendarDate,
         reminder: reminderData,
         notes: notesData,
-        time: selectedTime.toLocaleTimeString(),
+        time: formatTime(selectedTime),
       };
+  
       await remindersRef.doc(editingReminder.id).update(updatedReminder);
-
-      setSubmittedData((prevData) =>
-        prevData.map((item) =>
-          item.id === editingReminder.id ? updatedReminder : item
+  
+      setSubmittedData(
+        submittedData.map((item) =>
+          item.id === editingReminder.id
+            ? { ...updatedReminder, id: editingReminder.id }
+            : item
         )
       );
-
+  
       setEditingReminder(null);
       setShowPopup(false);
     } catch (error) {
       console.error("Error updating reminder: ", error);
     }
-  };
+  };  
+
+  // const formatTime = (time) => {
+  //   const hours = time.getHours().toString().padStart(2, '0');
+  //   const minutes = time.getMinutes().toString().padStart(2, '0');
+  //   return `${hours}:${minutes}`;
+  // };  
+
+  // const handleEditReminder = (reminder) => {
+  //   setEditingReminder(reminder);2
+  //   setReminderData(reminder.reminder);
+  //   setNotesData(reminder.notes);
+    
+  //   const timeParts = reminder.time.split(':');
+  //   const selectedTime = new Date();
+  //   selectedTime.setHours(parseInt(timeParts[0], 10));
+  //   selectedTime.setMinutes(parseInt(timeParts[1], 10));
+  
+  //   setSelectedTime(selectedTime);
+  //   setDatePickerVisible(true);
+  //   setShowPopup(true);
+  // };  
+
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -316,7 +365,6 @@ export default function MedicalReminders() {
                               <Text style={styles.submittedData}>Notes: {data.notes}</Text>
                               <Text style={styles.submittedData}>Time: {data.time}</Text>
                               <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                <Button title="Edit" onPress={() => handleEditReminder(data)} />
                                 <Button title="Dismiss Alarm" onPress={dismissAlarm} disabled={!alarmSound} />
                                 <Button title="Delete" onPress={() => handleDeleteReminder(data)} />
                               </View>
