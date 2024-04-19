@@ -6,26 +6,24 @@ import { ArrowLeftIcon } from 'react-native-heroicons/solid';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Plus from '../components/Plus';
 import { firestore } from '../config'; 
+import * as SMS from 'expo-sms';
 
 const Tab = createBottomTabNavigator();
 
-const HomeScreen = () => {
+const HomeScreen = ({ handleSendHelpSMS, message }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.emergencytext}>Having An Emergency?</Text>
       <Text style={styles.helptext}>Press the below button to get help</Text>
-      <TouchableOpacity>
-        <Image
-          source={require('../assets/images/sos button.png')}
-          style={styles.sosButton}
-        />
-      </TouchableOpacity>
+      <Button
+        title="SOS"
+        onPress={handleSendHelpSMS}
+      />
     </View>
   );
 };
 
 const ContactsScreen = () => {
-
   const [showPopup, setShowPopup] = useState(false);
   const [name, setName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -75,6 +73,10 @@ const ContactsScreen = () => {
         console.log("Contact added successfully!!");
         setShowPopup(false);
       }, 1000);
+
+      console.log("Contact created: ", newContact);
+      // onContactCreated(newContact);
+
     } catch (error) {
       console.error("Error adding contact: ", error);
     }
@@ -168,7 +170,12 @@ const MessageScreen = () => {
 
       setShowPopup(false);
 
+      console.log("Message created: ", newMessageText);
+      // onMessageCreated(newMessageText);
+
       console.log("Message sent successfully!!");
+
+
     } catch (error) {
       console.error("Error adding message: ", error);
     }
@@ -223,25 +230,55 @@ const MessageScreen = () => {
   );
 };
 
-
 const SosScreen = ({ contacts }) => {
 
   const navigation = useNavigation();
+  const [message, setMessage] = useState([]);
 
-  const sendSOSMessage = async () => {
-    const message = "I need help!";
-    const phoneNumbers = contacts.map(contact => contact.phoneNumber);
+  useEffect(() => {
+    handleSendHelpSMS();
+  }, [message]);
+  
+  const handleSendHelpSMS = async () => {
+    const helpMessage = "I need help!";
+    const phoneNumbers = contacts ? contacts.map(contact => contact.phoneNumber) : [];
+    
+    console.log('Phone Numbers:', phoneNumbers);
+  
+    // Log all messages
+    console.log('Messages:');
+    message.forEach(msg => console.log(msg.message));
   
     try {
       for (const phoneNumber of phoneNumbers) {
-        await SMS.sendSMSAsync(phoneNumber, message);
+        await SMS.sendSMSAsync(phoneNumber, helpMessage);
       }
-      Alert.alert('Success', 'Help SMS sent successfully');
+      console.log('Help SMS sent successfully');
+  
+      const messageText = message.length > 0 ? message[0].message : '';
+      console.log('Message Text:', messageText);
+  
+      if (messageText) {
+        try {
+          for (const phoneNumber of phoneNumbers) {
+            await SMS.sendSMSAsync(phoneNumber, messageText);
+          }
+          console.log('Message sent successfully');
+        } catch (error) {
+          console.error('Failed to send Message');
+          console.error(error);
+        }
+      } else {
+        console.log('No message to send');
+      }
     } catch (error) {
-      Alert.alert('Error', 'Failed to send SMS');
+      console.error('Failed to send Help SMS');
       console.error(error);
     }
-  };  
+  };
+  
+  
+  
 
   return (
     <>
@@ -281,11 +318,12 @@ const SosScreen = ({ contacts }) => {
       >
         <Tab.Screen 
           name="Home" 
-          component={HomeScreen} 
           options={{
             headerShown: false,
           }}
-        />
+        >
+          {() => <HomeScreen handleSendHelpSMS={handleSendHelpSMS} message={message} />}
+        </Tab.Screen>
         <Tab.Screen 
           name="Contacts" 
           component={ContactsScreen} 
