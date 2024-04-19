@@ -12,14 +12,18 @@ const Tab = createBottomTabNavigator();
 
 const HomeScreen = ({ handleSendHelpSMS, message }) => {
   return (
-    <View style={styles.container}>
+    <>
       <Text style={styles.emergencytext}>Having An Emergency?</Text>
       <Text style={styles.helptext}>Press the below button to get help</Text>
-      <Button
-        title="SOS"
-        onPress={handleSendHelpSMS}
-      />
-    </View>
+      <View style={styles.button}>
+        <TouchableOpacity
+          onPress={handleSendHelpSMS}
+          style={styles.buttonName}
+        >
+          <Text style={styles.buttonText}>HELP ME</Text>
+        </TouchableOpacity>
+      </View>
+    </>
   );
 };
 
@@ -230,55 +234,30 @@ const MessageScreen = () => {
   );
 };
 
-const SosScreen = ({ contacts }) => {
+const SosScreen = ({ contacts, messages }) => {
 
   const navigation = useNavigation();
   const [message, setMessage] = useState([]);
 
-  useEffect(() => {
-    handleSendHelpSMS();
-  }, [message]);
-  
   const handleSendHelpSMS = async () => {
     const helpMessage = "I need help!";
     const phoneNumbers = contacts ? contacts.map(contact => contact.phoneNumber) : [];
-    
-    console.log('Phone Numbers:', phoneNumbers);
-  
-    // Log all messages
-    console.log('Messages:');
-    message.forEach(msg => console.log(msg.message));
-  
+    const messageText = messages && messages.length > 0 ? messages[0].message : '';
+
     try {
       for (const phoneNumber of phoneNumbers) {
         await SMS.sendSMSAsync(phoneNumber, helpMessage);
+
+        if (messageText) {
+          await SMS.sendSMSAsync(phoneNumber, messageText);
+        }
       }
       console.log('Help SMS sent successfully');
-  
-      const messageText = message.length > 0 ? message[0].message : '';
-      console.log('Message Text:', messageText);
-  
-      if (messageText) {
-        try {
-          for (const phoneNumber of phoneNumbers) {
-            await SMS.sendSMSAsync(phoneNumber, messageText);
-          }
-          console.log('Message sent successfully');
-        } catch (error) {
-          console.error('Failed to send Message');
-          console.error(error);
-        }
-      } else {
-        console.log('No message to send');
-      }
     } catch (error) {
       console.error('Failed to send Help SMS');
       console.error(error);
     }
   };
-  
-  
-  
 
   return (
     <>
@@ -444,5 +423,17 @@ const styles = StyleSheet.create({
     marginTop: 20,
     paddingBottom: 18,
     paddingTop: 18,
+  },
+  button: {
+    marginTop: 140,
+    backgroundColor: '#39B68D',
+    paddingVertical: 30,
+    marginHorizontal: 90,
+    borderRadius: 20,
+  },
+  buttonText: {
+    textAlign: 'center',
+    fontSize: 25,
+    fontWeight: 'bold'
   }
 });
