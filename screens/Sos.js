@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { View, Text, Image, StyleSheet, TouchableOpacity, Modal, TextInput, Button } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Modal, TextInput } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { ArrowLeftIcon } from 'react-native-heroicons/solid';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -31,6 +31,7 @@ const ContactsScreen = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [name, setName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [editingContactId, setEditingContactId] = useState(null);
   const [contacts, setContacts] = useState([]);
 
   useEffect(() => {
@@ -50,91 +51,174 @@ const ContactsScreen = () => {
     fetchContacts();
   }, []); 
 
-  const handleSubmitForm = async () => {
+  const handleDeleteContact = async (contactId) => {
+    try {
+      await firestore.collection("contacts").doc(contactId).delete();
+      setContacts(prevContacts => prevContacts.filter(contact => contact.id !== contactId));
+      console.log("Contact deleted successfully!!");
+    } catch (error) {
+      console.error("Error deleting contact: ", error);
+    }
+  };
+
+  const handleEditContact = (contactId) => {
+    const contactToEdit = contacts.find(contact => contact.id === contactId);
+    setName(contactToEdit.name);
+    setPhoneNumber(contactToEdit.phoneNumber);
+    setEditingContactId(contactId);
+    setShowPopup(true);
+  };
+
+  const handleUpdateContact = async () => {
     if (!name || !phoneNumber) {
       alert("Please fill in all the fields");
       return;
     }
 
     try {
-      const contactsCollection = firestore.collection("contacts");
-
-      const newContact = {
+      await firestore.collection("contacts").doc(editingContactId).update({
         name: name,
         phoneNumber: phoneNumber,
-      };
+      });
 
-      await contactsCollection.add(newContact);
-
-      const updatedContactsSnapshot = await contactsCollection.get();
+      const updatedContactsSnapshot = await firestore.collection("contacts").get();
       const updatedContactsData = updatedContactsSnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }));
       setContacts(updatedContactsData);
 
+      setShowPopup(false);
+      console.log("Contact updated successfully!!");
+    } catch (error) {
+      console.error("Error updating contact: ", error);
+    }
+  };
+
+  const handleSubmitForm = async () => {
+    if (!name || !phoneNumber) {
+      alert("Please fill in all the fields");
+      return;
+    }
+  
+    try {
+      const contactsCollection = firestore.collection("contacts");
+  
+      const newContact = {
+        name: name,
+        phoneNumber: phoneNumber,
+      };
+  
+      await contactsCollection.add(newContact);
+  
+      const updatedContactsSnapshot = await contactsCollection.get();
+      const updatedContactsData = updatedContactsSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setContacts(updatedContactsData);
+  
       setTimeout(() => {
         console.log("Contact added successfully!!");
         setShowPopup(false);
       }, 1000);
-
+  
       console.log("Contact created: ", newContact);
-      // onContactCreated(newContact);
-
     } catch (error) {
       console.error("Error adding contact: ", error);
     }
   };
+  
 
   return (
     <>
-    <View style={styles.message}>
-      {contacts.map((contact, index) => (
-        <View key={contact.id} style={styles.contactContainer}>
-          <Text className="font-bold text-xl">{contact.name}</Text>
-          <Text className="text-lg">{contact.phoneNumber}</Text>
-        </View>
-      ))}
-    </View>
-    <View style={styles.plusContainer}>
-      <TouchableOpacity
-        style={styles.plusButton}
-        onPress={() => setShowPopup(true)}
-      >
-        <Plus size={20} color="white"/>
-      </TouchableOpacity>
-    </View>
-    <Modal
-      transparent={true}
-      visible={showPopup}
-      animationType="slide"
-    >
-      <View style={styles.popupContainer}>
-        <View style={styles.popup}>
-          <TextInput
-            style={styles.input}
-            placeholder="Name"
-            onChangeText={text => setName(text)}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Phone Number"
-            onChangeText={text => setPhoneNumber(text)}
-            keyboardType="phone-pad"
-          />
-            
-          <Button title="Submit" onPress={handleSubmitForm} />
-          <Button title="Cancel" onPress={() => setShowPopup(false)} />
-        </View>
+      {contacts.length === 0 ? (
+        <Text className="text-center mt-8 font-bold text-xl">No Contacts</Text>
+      ) : (
+        <Text className="text-center mt-8 font-bold text-xl">Your Contacts</Text>
+      )}
+      <View style={styles.message}>
+        {contacts.map((contact, index) => (
+          <View key={contact.id} style={styles.contactContainer}>
+            <Text className="font-bold text-xl">{contact.name}</Text>
+            <Text className="text-lg">{contact.phoneNumber}</Text>
+            <View style={styles.buttonsContainer}>
+              <TouchableOpacity
+                style={styles.editButton}
+                onPress={() => handleEditContact(contact.id)}
+              >
+                <Text>Edit</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.deleteButton}
+                onPress={() => handleDeleteContact(contact.id)}
+              >
+                <Text>Delete</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        ))}
       </View>
-    </Modal>
-  </>
+      <View style={styles.plusContainer}>
+        <TouchableOpacity
+          style={styles.plusButton}
+          onPress={() => {
+            setName('');
+            setPhoneNumber('');
+            setEditingContactId(null);
+            setShowPopup(true);
+          }}
+        >
+          <Plus size={20} color="white"/>
+        </TouchableOpacity>
+      </View>
+      <Modal
+        transparent={true}
+        visible={showPopup}
+        animationType="slide"
+      >
+        <View style={styles.popupContainer}>
+          <View style={styles.popup}>
+            <Text className="text-center text-lg mb-4 font-bold">Add Contact</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Name"
+              onChangeText={text => setName(text)}
+              value={name}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Phone Number"
+              onChangeText={text => setPhoneNumber(text)}
+              keyboardType="phone-pad"
+              value={phoneNumber}
+            />
+            <View style={styles.bothButtonContainer}>
+              <TouchableOpacity
+                onPress={editingContactId ? handleUpdateContact : handleSubmitForm}
+                style={styles.buttonContainerSubmit}
+              >
+                <Text className="text-black text-lg font-semibold">Submit</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setShowPopup(false)}
+                style={styles.buttonContainerCancel}
+              >
+                <Text className="text-white text-lg font-semibold">Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    </>
   );
 };
 
+
 const MessageScreen = () => {
-  const [message, setMessage] = useState([]);
+  const [messages, setMessages] = useState([]);
   const [newMessageText, setNewMessageText] = useState('');
+  const [editingMessageId, setEditingMessageId] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
 
   useEffect(() => {
@@ -146,7 +230,7 @@ const MessageScreen = () => {
           id: doc.id,
           ...doc.data()
         }));
-        setMessage(messagesData);
+        setMessages(messagesData);
       } catch (error) {
         console.error("Error fetching messages: ", error);
       }
@@ -170,39 +254,96 @@ const MessageScreen = () => {
         id: doc.id,
         ...doc.data()
       }));
-      setMessage(updatedMessagesData);
+      setMessages(updatedMessagesData);
 
       setShowPopup(false);
 
       console.log("Message created: ", newMessageText);
-      // onMessageCreated(newMessageText);
-
       console.log("Message sent successfully!!");
-
 
     } catch (error) {
       console.error("Error adding message: ", error);
     }
   };
 
+  const handleDeleteMessage = async (messageId) => {
+    try {
+      await firestore.collection('sosmessage').doc(messageId).delete();
+      setMessages(prevMessages => prevMessages.filter(message => message.id !== messageId));
+      console.log("Message deleted successfully!!");
+    } catch (error) {
+      console.error("Error deleting message: ", error);
+    }
+  };
+
+  const handleEditMessage = (messageId) => {
+    const messageToEdit = messages.find(message => message.id === messageId);
+    setNewMessageText(messageToEdit.message);
+    setEditingMessageId(messageId);
+    setShowPopup(true);
+  };
+
+  const handleUpdateMessage = async () => {
+    if (!newMessageText) {
+      alert("Please fill the message in the field");
+      return;
+    }
+
+    try {
+      await firestore.collection('sosmessage').doc(editingMessageId).update({
+        message: newMessageText,
+      });
+
+      const updatedMessagesSnapshot = await firestore.collection('sosmessage').get();
+      const updatedMessagesData = updatedMessagesSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setMessages(updatedMessagesData);
+
+      setShowPopup(false);
+      console.log("Message updated successfully!!");
+    } catch (error) {
+      console.error("Error updating message: ", error);
+    }
+  };
+
   return (
     <>
-      {message.length === 0 ? (
+      {messages.length === 0 ? (
         <Text className="text-center mt-8 font-bold text-xl">No Messages</Text>
       ) : (
         <Text className="text-center mt-8 font-bold text-xl">Your Messages</Text>
       )}
       <View style={styles.message}>
-        {message.map((message, index) => (
+        {messages.map((message, index) => (
           <View key={message.id} style={styles.messageContainer}>
-            <Text style={styles.messageInfo}>{message.message}</Text>
+            <Text className="text-lg font-semibold">{message.message}</Text>
+            <View style={styles.buttonsContainer}>
+              <TouchableOpacity
+                style={styles.editButton}
+                onPress={() => handleEditMessage(message.id)}
+              >
+                <Text>Edit</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.deleteButton}
+                onPress={() => handleDeleteMessage(message.id)}
+              >
+                <Text>Delete</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         ))}
       </View>
       <View style={styles.plusContainer}>
         <TouchableOpacity
           style={styles.plusButton}
-          onPress={() => setShowPopup(true)}
+          onPress={() => {
+            setNewMessageText('');
+            setEditingMessageId(null);
+            setShowPopup(true);
+          }}
         >
           <Plus size={20} color="white" />
         </TouchableOpacity>
@@ -214,19 +355,31 @@ const MessageScreen = () => {
       >
         <View style={styles.popupContainer}>
           <View style={styles.popup}>
+            <Text className="text-center text-lg mb-4 font-bold">Add Message</Text>
             <TextInput
               style={styles.input}
               placeholder='Message'
               onChangeText={text => setNewMessageText(text)}
+              value={newMessageText}
             />
-            <Button
-              title="Submit"
-              onPress={handleMessageSubmitForm}
-            />
-            <Button
-              title="Cancel"
-              onPress={() => setShowPopup(false)}
-            />
+            <View style={styles.bothButtonContainer}>
+              <TouchableOpacity
+                onPress={editingMessageId ? handleUpdateMessage : handleMessageSubmitForm}
+                style={styles.buttonContainerSubmit}
+              >
+                <Text className="text-lg font-semibold">{editingMessageId ? "Update" : "Submit"}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setShowPopup(false);
+                  setNewMessageText('');
+                  setEditingMessageId(null);
+                }}
+                style={styles.buttonContainerCancel}
+              >
+                <Text className="text-white text-lg font-semibold">Cancel</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
@@ -435,5 +588,24 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 25,
     fontWeight: 'bold'
+  },
+  bothButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  buttonContainerSubmit: {
+    backgroundColor: '#39B68D',
+    paddingTop: 10,
+    paddingLeft: 40,
+    paddingRight: 40,
+    borderRadius: 15,
+  },
+  buttonContainerCancel: {
+    backgroundColor: 'black',
+    paddingTop: 10,
+    paddingLeft: 40,
+    paddingRight: 40,
+    paddingBottom: 10,
+    borderRadius: 15,
   }
 });
