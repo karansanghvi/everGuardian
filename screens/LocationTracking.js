@@ -11,7 +11,6 @@ import { useNavigation } from "@react-navigation/native";
 import { ArrowLeftIcon } from "react-native-heroicons/solid";
 import * as Location from "expo-location";
 import { firestore, auth } from "../config";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const LocationTracking = () => {
   const navigation = useNavigation();
