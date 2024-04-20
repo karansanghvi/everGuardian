@@ -38,7 +38,7 @@ const LocationTracking = () => {
           }
         }
       } catch (error) {
-        console.error("Error fetching user data:", error);
+        // console.error("Error fetching user data:", error);
       }
     };
 
@@ -97,7 +97,7 @@ const LocationTracking = () => {
           >
             <ArrowLeftIcon size={20} color="white" />
           </TouchableOpacity>
-          <Text style={styles.title}>Your Location</Text>
+          <Text style={styles.title}>Location Tracking</Text>
         </View>
       </SafeAreaView>
       {userType === "elderly" ? (
@@ -126,6 +126,7 @@ const ElderlyLocationTracking = ({
 }) => {
   return (
     <View style={{ flex: 1 }}>
+      <Text className="text-center text-lg">Your are seeing your location</Text>
       {errorMessage ? (
         <Text>{errorMessage}</Text>
       ) : location ? (
@@ -147,17 +148,6 @@ const ElderlyLocationTracking = ({
               title="Your Location"
             />
           </MapView>
-          <View style={styles.coordinatesContainer}>
-            <Text style={styles.coordinatesText}>
-              Latitude: {location.coords.latitude.toFixed(6)}
-            </Text>
-            <Text style={styles.coordinatesText}>
-              Longitude: {location.coords.longitude.toFixed(6)}
-            </Text>
-            <Text style={styles.coordinatesText}>
-              Confirmation Code: {confirmationCode}
-            </Text>
-          </View>
         </>
       ) : (
         <Text>Loading...</Text>
@@ -190,7 +180,7 @@ const GuardianLocationTracking = ({ confirmationCode, userType }) => {
           }
         }
       } catch (error) {
-        console.error("Error fetching user data:", error);
+        // console.error("Error fetching user data:", error);
       }
     };
 
@@ -246,12 +236,7 @@ const GuardianLocationTracking = ({ confirmationCode, userType }) => {
 
   return (
     <View style={{ flex: 1 }}>
-      <View style={styles.coordinatesContainer}>
-        <Text style={styles.coordinatesText}>User Type: {userType}</Text>
-        <Text style={styles.coordinatesText}>
-          Confirmation Code: {confirmationCode}
-        </Text>
-      </View>
+      <Text className="text-center text-lg">You are seeing {elderlyName}'s location</Text>
       {loading ? (
         <Text>Loading...</Text>
       ) : elderlyLocation ? (
@@ -273,7 +258,7 @@ const GuardianLocationTracking = ({ confirmationCode, userType }) => {
               title={`Location of ${elderlyName}`}
             />
           </MapView>
-          <View style={styles.coordinatesContainer}>
+          {/* <View style={styles.coordinatesContainer}>
             <Text style={styles.coordinatesText}>
               Latitude: {elderlyLocation.latitude.toFixed(6)}
             </Text>
@@ -283,7 +268,7 @@ const GuardianLocationTracking = ({ confirmationCode, userType }) => {
             <Text style={styles.coordinatesText}>
               Elderly User Name: {elderlyName}
             </Text>
-          </View>
+          </View> */}
         </>
       ) : (
         <Text>No location data available for the elderly.</Text>
