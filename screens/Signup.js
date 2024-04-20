@@ -129,11 +129,6 @@ const Signup = ({ navigation }) => {
   };
 
   return (
-    <ScrollView
-    contentContainerStyle={{ flexGrow: 1 }}
-    keyboardShouldPersistTaps= "handled"
-  >
-
     <LinearGradient
       style={{ flex: 1, backgroundColor: "#007260" }}
       colors={["#007260", "#39B68D"]}
@@ -225,9 +220,10 @@ const Signup = ({ navigation }) => {
                   style={[
                     styles.radioButton,
                     userType === "elderly" && styles.selectedRadioButton,
+                    userType === null && styles.unselectedRadioButton,
                   ]}
                 >
-                  <Text style={styles.radioText}>Elderly</Text>
+                  <Text style={[styles.radioText, userType === "elderly" && styles.selectedRadioText]}>Elderly</Text>
                 </View>
               </TouchableOpacity>
 
@@ -236,9 +232,10 @@ const Signup = ({ navigation }) => {
                   style={[
                     styles.radioButton,
                     userType === "guardian" && styles.selectedRadioButton,
+                    userType === null && styles.unselectedRadioButton,
                   ]}
                 >
-                  <Text style={styles.radioText}>Guardian</Text>
+                  <Text style={[styles.radioText, userType === "guardian" && styles.selectedRadioText]}>Guardian</Text>
                 </View>
               </TouchableOpacity>
             </View>
@@ -291,8 +288,6 @@ const Signup = ({ navigation }) => {
         </View>
       </ScrollView>
     </LinearGradient>
-    </ScrollView>
-
   );
 };
 
@@ -314,20 +309,27 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   radioContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   radioButton: {
-    borderWidth: 1,
-    borderColor: "black",
     padding: 10,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: 'black',
+    backgroundColor: 'black',
   },
   selectedRadioButton: {
-    backgroundColor: "black",
-    color: "white",
+    backgroundColor: 'white',
+  },
+  unselectedRadioButton: {
+    backgroundColor: 'black',
   },
   radioText: {
-    color: "white",
+    color: 'white',
+  },
+  selectedRadioText: {
+    color: 'black',
   },
 });
 

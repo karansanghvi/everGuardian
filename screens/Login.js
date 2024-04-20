@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { ArrowLeftIcon } from 'react-native-heroicons/solid';
 import { auth } from '../config';
-import * as MailComposer from 'expo-mail-composer';
+// import * as MailComposer from 'expo-mail-composer';
 
 const Login = () => {
   const navigation = useNavigation();
@@ -21,13 +21,17 @@ const Login = () => {
       const userCredentials = await auth.signInWithEmailAndPassword(email, password);
       navigation.navigate('Home');
     } catch (error) {
-      console.error('Login failed:', error);
+      if (error.code === 'auth/invalid-credential') {
+        // Alert.alert('Incorrect password. Login Failed!!');
+      } else {
+        console.error('Login failed: ', error);
+      }
     }
   };
 
   const handleForgotPassword = () => {
-    navigation.navigate('ForgotPassword')
-  }
+    navigation.navigate('ForgotPassword');
+  };
 
   return (
     <LinearGradient className="flex-1 bg-white" colors={['#007260', '#39B68D']}>
