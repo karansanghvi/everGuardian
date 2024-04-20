@@ -19,27 +19,16 @@ const Login = () => {
   const handleLoginButton = async () => {
     try {
       const userCredentials = await auth.signInWithEmailAndPassword(email, password);
-      sendWelcomeEmail(email);
       navigation.navigate('Home');
     } catch (error) {
       console.error('Login failed:', error);
     }
   };
 
-  const sendWelcomeEmail = (userEmail) => {
-    const message = {
-      subject: 'Welcome to Your App!',
-      body: 'Thank you for logging in. Enjoy using our app!',
-      isHtml: false,
-      recipients: [userEmail],
-    };
-
-    MailComposer.composeAsync(message);
-  };
-
   const handleForgotPassword = () => {
     navigation.navigate('ForgotPassword')
   }
+
   return (
     <LinearGradient className="flex-1 bg-white" colors={['#007260', '#39B68D']}>
       <SafeAreaView className="flex">
