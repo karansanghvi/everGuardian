@@ -147,13 +147,13 @@ const ContactsScreen = () => {
                 style={styles.editButton}
                 onPress={() => handleEditContact(contact.id)}
               >
-                <Text>Edit</Text>
+                <Text className="text-white font-semibold text-md">Edit</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.deleteButton}
                 onPress={() => handleDeleteContact(contact.id)}
               >
-                <Text>Delete</Text>
+                <Text style={styles.deleteText}>Delete</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -324,13 +324,13 @@ const MessageScreen = () => {
                 style={styles.editButton}
                 onPress={() => handleEditMessage(message.id)}
               >
-                <Text>Edit</Text>
+                <Text className="text-white font-semibold text-md">Edit</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.deleteButton}
                 onPress={() => handleDeleteMessage(message.id)}
               >
-                <Text>Delete</Text>
+                <Text className="text-white font-semibold text-md">Delete</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -388,9 +388,7 @@ const MessageScreen = () => {
 };
 
 const SosScreen = ({ contacts, messages }) => {
-
   const navigation = useNavigation();
-  const [message, setMessage] = useState([]);
 
   const handleSendHelpSMS = async () => {
     const helpMessage = "I need help!";
@@ -454,7 +452,7 @@ const SosScreen = ({ contacts, messages }) => {
             headerShown: false,
           }}
         >
-          {() => <HomeScreen handleSendHelpSMS={handleSendHelpSMS} message={message} />}
+          {() => <HomeScreen handleSendHelpSMS={handleSendHelpSMS} message={messages && messages.length > 0 ? messages[0].message : ''} />}
         </Tab.Screen>
         <Tab.Screen 
           name="Contacts" 
@@ -476,6 +474,7 @@ const SosScreen = ({ contacts, messages }) => {
 };
 
 export default SosScreen;
+
 
 const styles = StyleSheet.create({
   container: {
@@ -607,5 +606,29 @@ const styles = StyleSheet.create({
     paddingRight: 40,
     paddingBottom: 10,
     borderRadius: 15,
+  },
+  buttonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  editButton: {
+    backgroundColor: 'black',
+    paddingTop: 10,
+    paddingBottom: 10,
+    paddingLeft: 22,
+    paddingRight: 22,
+    borderRadius: 15,
+  },
+  deleteButton: {
+    backgroundColor: 'black',
+    paddingTop: 10,
+    paddingBottom: 10,
+    paddingLeft: 15,
+    paddingRight: 15,
+    borderRadius: 15,
+  },
+  deleteText: {
+    color: 'white',
+    fontWeight: 'bold',
   }
 });
