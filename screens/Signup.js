@@ -93,7 +93,7 @@ const Signup = ({ navigation }) => {
               email: user.email,
               userId: user.uid,
               userType: userType,
-              confirmationCode: null, // Assuming guardians don't have confirmation codes
+              confirmationCode: confirmationCode, // Assuming guardians don't have confirmation codes
             });
 
           guardianUserId = user.uid;
