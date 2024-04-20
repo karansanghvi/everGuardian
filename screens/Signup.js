@@ -327,7 +327,7 @@ const styles = StyleSheet.create({
     color: "white",
   },
   radioText: {
-    color: "black",
+    color: "white",
   },
 });
 
