@@ -46,6 +46,7 @@
     "react-native-calendars": "^1.1304.1",
     "react-native-dotenv": "^3.4.11",
     "react-native-element-dropdown": "^2.10.1",
+    "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "~2.14.0",
     "react-native-heroicons": "^4.0.0",
     "react-native-maps": "1.10.0",
