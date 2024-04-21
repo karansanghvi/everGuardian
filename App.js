@@ -1,4 +1,4 @@
-import { Login, Welcome, Signup, Home, MedicalRecords } from "./screens";
+import { Login, Welcome, Signup, Home } from "./screens";
 import Profile from "./screens/Profile";
 import { firebase,firestore } from "./config";
 import { useEffect, useState } from "react";
@@ -8,6 +8,7 @@ import ForgotPassword from "./screens/ForgotPassword";
 import MedicalReminders from "./screens/MedicalReminders";
 import LocationTracking from "./screens/LocationTracking";
 import Sos from "./screens/Sos";
+import BMICalculatorScreen from "./screens/BMICalculatorScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -77,13 +78,13 @@ function App() {
             headerShown: false,
           }}
         />
-        <Stack.Screen 
+        {/* <Stack.Screen 
           name="MedicalRecords"
           component={MedicalRecords}
           options={{
             headerShown: false
           }}
-        />
+        /> */}
         <Stack.Screen
           name="MedicalReminders"
           component={MedicalReminders}
@@ -101,6 +102,13 @@ function App() {
         <Stack.Screen
           name="SOS"
           component={Sos}
+          options={{
+            headerShown: false
+          }}
+        />
+        <Stack.Screen
+          name="BMICalculator"
+          component={BMICalculatorScreen}
           options={{
             headerShown: false
           }}

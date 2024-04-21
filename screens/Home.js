@@ -12,7 +12,7 @@ const Home = ({ route }) => {
   };
 
   const handleMedicalRecordsButton = () => {
-    navigation.navigate('MedicalRecords');
+    navigation.navigate('BMICalculator');
   };
 
   const handleMedicalRemindersButton = () => {
@@ -107,10 +107,10 @@ const Home = ({ route }) => {
                 onPress={handleMedicalRecordsButton}
               >
                 <Image
-                  source={require('../assets/images/medical_records.png')}
+                  source={require('../assets/images/bmi.png')}
                   style={styles.optionsImage}
                 />
-                <Text style={{ color: 'black', marginTop: 12 }} className="text-center font-bold text-xl">Medical Records</Text>
+                <Text style={{ color: 'black', marginTop: 12 }} className="text-center font-bold text-xl">BMI Calculator</Text>
               </TouchableOpacity>
           </View>
 

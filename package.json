@@ -12,6 +12,7 @@
     "@expo/vector-icons": "^14.0.0",
     "@react-native-community/checkbox": "^0.5.17",
     "@react-native-community/datetimepicker": "7.6.1",
+    "@react-native-community/slider": "^4.5.2",
     "@react-navigation/bottom-tabs": "^6.5.20",
     "@react-navigation/drawer": "^6.6.11",
     "@react-navigation/native": "^6.1.17",
