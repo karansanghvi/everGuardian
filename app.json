@@ -2,6 +2,7 @@
   "expo": {
     "name": "everGuardian",
     "slug": "everGuardian",
+    "description": "EverGuardian is an support care app for elderly people. It has services like Medical Reminders, BMI Calculator, Location Tracking, SOS System. The main functionality in this app is, the guardian and can access the app of the elderly. ",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
