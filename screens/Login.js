@@ -29,9 +29,9 @@ const Login = () => {
     }
   };
 
-  const handleForgotPassword = () => {
-    navigation.navigate('ForgotPassword');
-  };
+  // const handleForgotPassword = () => {
+  //   navigation.navigate('ForgotPassword');
+  // };
 
   return (
     <LinearGradient className="flex-1 bg-white" colors={['#007260', '#39B68D']}>
@@ -71,11 +71,11 @@ const Login = () => {
             placeholder='Password'
             onChangeText={(text) => setPassword(text)}
           />
-          <TouchableOpacity 
+          {/* <TouchableOpacity 
             onPress={handleForgotPassword}
             className="flex items-end">
             <Text className="text-black mb-5">Forgot Password?</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <TouchableOpacity
             className="py-3 bg-black rounded-lg"
             onPress={handleLoginButton}
