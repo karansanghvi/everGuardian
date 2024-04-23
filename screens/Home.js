@@ -1,11 +1,57 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
-import { View, Text, Image, StyleSheet, TouchableOpacity, TextBase, ScrollView } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, TextBase, ScrollView, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { Accelerometer } from 'expo-sensors';
 
 const Home = ({ route }) => {
   const navigation = useNavigation();
   const { firstName } = route.params || {};
+
+  useEffect(() => {
+    let subscription;
+    const threshold = 5;
+
+    const handleShake = ({ x, y, z }) => {
+      const acceleration = Math.sqrt(x ** 2 + y ** 2 + z ** 2);
+      if(acceleration > threshold) {
+        // fall detected
+        showFallAlert();
+      }
+    };
+
+    const startAccelerometer = async () => {
+      subscription = Accelerometer.addListener(handleShake);
+    };
+
+    const stopAccelerometer = () => {
+      if (subscription) {
+        subscription.remove();
+      }
+    };
+
+    startAccelerometer();
+
+    return () => stopAccelerometer();
+  }, []);
+
+  const showFallAlert = () => {
+    Alert.alert(
+      'Fall Detected',
+      'Are you okay?',
+      [
+        {
+          text: 'Yes', onPress: () => console.log('user is okay')
+        },
+        {
+          text: 'No', onPress: () => console.log('Call emergency services')
+        },
+      ],
+      {
+        cancelable: false
+      }
+    );
+  };
 
   const handleProfile = () => {
     navigation.navigate('Profile');
