@@ -36,6 +36,7 @@
     "expo-sensors": "^12.9.1",
     "expo-sms": "~11.7.1",
     "expo-status-bar": "~1.11.1",
+    "expo-updates": "^0.24.12",
     "firebase": "^10.8.0",
     "graphql": "^15.8.0",
     "metro-core": "^0.80.6",

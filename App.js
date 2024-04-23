@@ -4,6 +4,7 @@ import { firebase,firestore } from "./config";
 import { useEffect, useState } from "react";
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import ForgotPassword from "./screens/ForgotPassword";
 import MedicalReminders from "./screens/MedicalReminders";
 import LocationTracking from "./screens/LocationTracking";
 import Sos from "./screens/Sos";
@@ -49,6 +50,13 @@ function App() {
             <Stack.Screen
               name="Signup"
               component={Signup}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="ForgotPassword"
+              component={ForgotPassword}
               options={{
                 headerShown: false,
               }}
