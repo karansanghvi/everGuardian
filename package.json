@@ -21,6 +21,7 @@
     "@twilio/conversations": "^2.5.0",
     "axios": "^1.6.8",
     "base64-js": "^1.5.1",
+    "eas-cli": "^7.8.3",
     "expo": "^50.0.17",
     "expo-app-loading": "^2.1.1",
     "expo-av": "~13.10.6",
